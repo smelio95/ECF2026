@@ -40,3 +40,13 @@
 - Un utilisateur peut avoir plusieurs rendez-vous
 - Un service peut être lié à plusieurs rendez-vous
 - Un employé peut gérer plusieurs rendez-vous
+
+
+## Adaptation du MCD
+
+Le modèle de données a été conçu selon les principes du MCD
+(entités, relations, cardinalités), en s’inspirant d’un schéma
+relationnel classique.
+
+Le modèle a été volontairement simplifié afin de répondre
+aux besoins fonctionnels du projet de gestion de rendez-vous.
