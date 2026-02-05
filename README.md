@@ -8,5 +8,5 @@ Stack technique :
 
 - Frontend : HTML / CSS
 - Backend : Node.js / Express
-- Base de donnéees relationnelle : PostgreSQL (via Prisma)
+- Base de données relationnelle : PostgreSQL (via Prisma)
 - Base de données NoSQL : MongoDB
