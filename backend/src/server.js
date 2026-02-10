@@ -1,4 +1,5 @@
 import express from "express";
+import userRoutes from "./routes/user.routes.js";
 
 const app = express();
 const PORT = 3000;
@@ -6,8 +7,11 @@ const PORT = 3000;
 // Middleware JSON
 app.use(express.json());
 
+// Route pour les utilisateurs
+app.use('/api', userRoutes);
+
 // Route de test
-app.get("/health", (req, res) => {
+app.get('/health', (req, res) => {
   res.json({ status: "API OK" });
 });
 
