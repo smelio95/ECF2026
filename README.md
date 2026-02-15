@@ -2,7 +2,7 @@
 
 Projet ECF du développeur web et web mobile
 
-Appplication de gestion de rendez-vous
+Appplication pour l'entreprise Vite et gourmand
 
 Stack technique :
 
