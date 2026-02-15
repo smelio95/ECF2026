@@ -1,0 +1,13 @@
+import express from "express";
+import { create, getMine, remove, getAll, updateStatus } from "./appointment.controller.js";
+import { authenticateToken } from "../auth/auth.middleware.js";
+
+const router = express.Router();
+
+router.post("/", authenticateToken, create);
+router.get("/me", authenticateToken, getMine);
+router.delete("/:id", authenticateToken, remove);
+router.get("/", authenticateToken, getAll);
+router.put("/:id", authenticateToken, updateStatus);
+
+export default router;

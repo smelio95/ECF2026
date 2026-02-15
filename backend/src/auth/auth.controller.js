@@ -1,14 +1,6 @@
-// Importation du client Prisma pour interagir avec la base de données
-import { PrismaClient } from '@prisma/client';
-
-// Importation de bcrypt pour le hachage des mots de passe
+import prisma from '../../config/prisma.js';
 import bcrypt from 'bcrypt';
-
-// Importation de jsonwebtoken pour la gestion des tokens JWT
 import jwt from 'jsonwebtoken';
-
-// Création d'une instance du client Prisma
-const prisma = new PrismaClient();
 
 // Fonction pour créer un nouvel utilisateur dans la base de données
 export const createUser = async (userData) => {
@@ -49,7 +41,7 @@ export const loginUser = async (email, password) => {
     const token = jwt.sign(
         { 
             userId: user.id, 
-            role: user.role.name 
+            role: user.role.label 
         },
         
         process.env.JWT_SECRET,

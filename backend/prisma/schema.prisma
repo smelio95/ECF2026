@@ -15,7 +15,7 @@ datasource db {
 
 model Role {
   id    Int    @id @default(autoincrement())
-  label  String @unique
+  label String @unique
 
   users User[]
 }
@@ -26,33 +26,44 @@ model User {
   password   String
   firstname  String?
   lastname   String?
-  phone     String?
-  address   String?
-  city      String?
-  country   String?
+  phone      String?
+  address    String?
+  city       String?
+  country    String?
   created_at DateTime @default(now())
 
   role_id Int
   role    Role @relation(fields: [role_id], references: [id])
 
+  reviews              Review[]
   clientAppointments   Appointment[] @relation("ClientAppointments")
   employeeAppointments Appointment[] @relation("EmployeeAppointments")
 }
 
+// Menu
 model Service {
-  id          Int    @id @default(autoincrement())
+  id          Int     @id @default(autoincrement())
   name        String
   description String?
   duration    Int?
   price       Float?
 
   appointments Appointment[]
+  plats Plat[]
+  reviews      Review[]
+
+  regime_id Int?
+  theme_id  Int?
+
+  regime Regime? @relation(fields: [regime_id], references: [id])
+  theme  Theme?  @relation(fields: [theme_id], references: [id])
 }
 
+// Commande
 model Appointment {
-  id         Int      @id @default(autoincrement())
-  date       DateTime
-  status     String
+  id     Int      @id @default(autoincrement())
+  date   DateTime
+  status String
 
   user_id     Int
   employee_id Int
@@ -61,4 +72,58 @@ model Appointment {
   user     User    @relation("ClientAppointments", fields: [user_id], references: [id])
   employee User    @relation("EmployeeAppointments", fields: [employee_id], references: [id])
   service  Service @relation(fields: [service_id], references: [id])
+}
+
+// Avis
+model Review {
+  id          Int      @id @default(autoincrement())
+  note        Int
+  description String?
+  status      String   @default("PENDING")
+  created_at  DateTime @default(now())
+
+  user_id    Int
+  service_id Int
+
+  user    User    @relation(fields: [user_id], references: [id])
+  service Service @relation(fields: [service_id], references: [id])
+}
+
+
+model Regime {
+  id      Int      @id @default(autoincrement())
+  label   String   @unique
+
+  services Service[]
+}
+
+model Theme {
+  id      Int      @id @default(autoincrement())
+  label   String   @unique
+
+  services Service[]
+}
+
+model Plat {
+  id        Int     @id @default(autoincrement())
+  title     String
+  photo     String?   // on met String au lieu de BLOB pour simplifier
+  created_at DateTime @default(now())
+
+  services   Service[]   // relation N-N avec Service (menu)
+  allergenes Allergene[]
+}
+
+model Allergene {
+  id    Int    @id @default(autoincrement())
+  label String @unique
+
+  plats Plat[]
+}
+
+model Horaire {
+  id              Int     @id @default(autoincrement())
+  day             String
+  opening_time    String
+  closing_time    String
 }

@@ -1,22 +1,9 @@
-import "dotenv/config";
-import express from "express";
-import userRoutes from "./routes/user.routes.js";
+import 'dotenv/config';
+import app from './app.js';
 
-const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-// Middleware JSON
-app.use(express.json());
-
-// Route pour les utilisateurs
-app.use('/api', userRoutes);
-
-// Route de test
-app.get('/health', (req, res) => {
-  res.json({ status: "API OK" });
-});
-
-// Lancement du serveur
 app.listen(PORT, () => {
-  console.log(`🚀 Serveur backend lancé sur http://localhost:${PORT}`);
+  console.log(`✅ Serveur démarré sur le port ${PORT}`);
+  console.log(`🗄️  Base de données: ${process.env.DATABASE_URL ? 'Connectée' : '❌ Non configurée'}`);
 });
