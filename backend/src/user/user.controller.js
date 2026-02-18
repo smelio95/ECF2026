@@ -69,7 +69,7 @@ export const login = async (req, res) => {
 // Récupérer le profil de l'utilisateur connecté
 export const getProfile = async (req, res) => {
   try {
-    const user = await getUserById(req.user.userId);
+    const user = await getUserById(req.user.id); // ✅ CORRIGÉ
 
     if (!user) {
       return res.status(404).json({ 
@@ -89,7 +89,7 @@ export const getProfile = async (req, res) => {
 // Mettre à jour le profil de l'utilisateur connecté
 export const updateProfile = async (req, res) => {
   try {
-    const updatedUser = await updateUser(req.user.userId, req.body);
+    const updatedUser = await updateUser(req.user.id, req.body); // ✅ CORRIGÉ
 
     res.json({
       message: "Profil mis à jour avec succès",
@@ -106,7 +106,7 @@ export const updateProfile = async (req, res) => {
 // Supprimer le compte de l'utilisateur connecté
 export const deleteProfile = async (req, res) => {
   try {
-    await deleteUserFromDB(req.user.userId);  // ✅ Utilise le model
+    await deleteUserFromDB(req.user.id); // ✅ CORRIGÉ
     res.json({ message: "Compte supprimé avec succès" });
   } catch (error) {
     console.error(error);

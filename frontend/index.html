@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vite & Gourmand - Restauration Événementielle</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>Vite & Gourmand</h1>
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="active">Accueil</a></li>
+                <li><a href="services.html">Nos Services</a></li>
+                <li><a href="login.html" id="loginLink">Connexion</a></li>
+                <li><a href="profile.html" id="profileLink" style="display:none;">Mon Compte</a></li>
+                <li><a href="#" id="logoutLink" style="display:none;">Déconnexion</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h2>Restauration Événementielle d'Exception</h2>
+                    <p>Depuis plus de 20 ans, Vite & Gourmand sublime vos événements avec des menus raffinés et personnalisés. Notre savoir-faire artisanal et notre engagement pour la qualité font de chaque prestation un moment inoubliable.</p>
+                    <a href="services.html" class="btn btn-primary">Découvrir nos menus</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="container">
+                <h2>Pourquoi Choisir Vite & Gourmand</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🍽️</div>
+                        <h3>Menus Personnalisés</h3>
+                        <p>Des créations culinaires sur mesure adaptées à vos goûts et à votre événement.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">👨‍🍳</div>
+                        <h3>Chefs Expérimentés</h3>
+                        <p>Une équipe de professionnels passionnés au service de votre gastronomie.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🌿</div>
+                        <h3>Produits Locaux</h3>
+                        <p>Sélection rigoureuse de produits frais issus de producteurs locaux.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⭐</div>
+                        <h3>Service Premium</h3>
+                        <p>Un accompagnement personnalisé de la réservation jusqu'au jour J.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="hours">
+            <div class="container">
+                <h2>Nos Horaires</h2>
+                <div class="hours-grid" id="hoursGrid">
+                    <div class="loading">Chargement des horaires...</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta">
+            <div class="container">
+                <h2>Prêt à Organiser Votre Événement ?</h2>
+                <p>Consultez nos services et réservez dès maintenant votre menu personnalisé.</p>
+                <a href="services.html" class="btn btn-secondary">Voir nos services</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Vite & Gourmand</h3>
+                    <p>Restauration événementielle d'exception depuis 2004</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Nos Horaires</h3>
+                    <div id="footerHoraires">
+                        <p class="loading-small">Chargement...</p>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact</h3>
+                    <p>Email: contact@vitegourmand.fr</p>
+                    <p>Tél: 01 23 45 67 89</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Vite & Gourmand. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="api.js"></script>
+    <script src="auth.js"></script>
+    <script src="footer-horaires.js"></script>
+    <script>
+        async function loadHours() {
+            try {
+                const response = await api.get('/horaires');
+                const hoursGrid = document.getElementById('hoursGrid');
+                if (response.horaires && response.horaires.length > 0) {
+                    hoursGrid.innerHTML = response.horaires.map(h => `
+                        <div class="hour-card">
+                            <h3>${h.day}</h3>
+                            <p>${h.opening_time === 'Fermé' ? 'Fermé' : `${h.opening_time} - ${h.closing_time}`}</p>
+                        </div>
+                    `).join('');
+                } else {
+                    hoursGrid.innerHTML = '<p>Horaires non disponibles</p>';
+                }
+            } catch (error) {
+                document.getElementById('hoursGrid').innerHTML = '<p>Erreur lors du chargement des horaires</p>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateNavigation();
+            loadHours();
+        });
+    </script>
+</body>
+</html>

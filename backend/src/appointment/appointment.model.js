@@ -1,93 +1,119 @@
 import prisma from '../../prisma.js';
 
-// Créer un rendez-vous
+// Créer une commande
 export const createAppointment = async (data) => {
   const { date, service_id, employee_id, user_id } = data;
+
+  // Vérifications
+  if (!date || !service_id || !employee_id || !user_id) {
+    throw new Error("date, service_id, employee_id et user_id sont requis");
+  }
 
   return prisma.appointment.create({
     data: {
       date: new Date(date),
-      status: "PENDING",
-      service: {
-        connect: { id: service_id }
-      },
-      user: {
-        connect: { id: user_id }
-      },
-      employee: {
-        connect: { id: employee_id }
-      }
+      status: 'PENDING',
+      service:  { connect: { id: parseInt(service_id) } },
+      user:     { connect: { id: parseInt(user_id) } },
+      employee: { connect: { id: parseInt(employee_id) } }
+    },
+    include: {
+      service:  { select: { id: true, name: true, price: true } },
+      user:     { select: { id: true, firstname: true, lastname: true, email: true } },
+      employee: { select: { id: true, firstname: true, lastname: true } }
     }
   });
 };
 
-// Voir les rendez-vous d'un utilisateur
+// Mes commandes (utilisateur connecté)
 export const getUserAppointments = async (userId) => {
   return prisma.appointment.findMany({
-    where: { user_id: userId },
+    where: { user_id: parseInt(userId) },
     include: {
-      service: true,
-      employee: true
-    }
+      service:  { select: { id: true, name: true, price: true } },
+      employee: { select: { id: true, firstname: true, lastname: true } }
+    },
+    orderBy: { date: 'desc' }
   });
 };
 
-// Supprimer un rendez-vous
+// Supprimer une commande (uniquement la sienne)
 export const deleteAppointment = async (id, userId) => {
-  return prisma.appointment.deleteMany({
-    where: {
-      id: id,
-      user_id: userId
-    }
-  });
+  const appointment = await prisma.appointment.findUnique({ where: { id } });
+  
+  if (!appointment) {
+    throw new Error("Commande non trouvée");
+  }
+  
+  if (appointment.user_id !== parseInt(userId)) {
+    throw new Error("Vous ne pouvez pas supprimer cette commande");
+  }
+
+  return prisma.appointment.delete({ where: { id } });
 };
 
-// Récupérer les rendez-vous selon le rôle
+// Toutes les commandes selon le rôle
 export const getAppointments = async (user) => {
-  if (user.role === "ADMIN") {
+  // ✅ CORRIGÉ : user.role.label (objet complet) et non user.role (string)
+  const roleLabel = user.role?.label || user.role;
+
+  if (roleLabel === 'ADMIN') {
     return prisma.appointment.findMany({
       include: {
-        user: true,
-        employee: true,
-        service: true
-      }
+        user:     { select: { id: true, firstname: true, lastname: true, email: true, phone: true } },
+        employee: { select: { id: true, firstname: true, lastname: true } },
+        service:  { select: { id: true, name: true, price: true } }
+      },
+      orderBy: { date: 'desc' }
     });
   }
 
-  if (user.role === "EMPLOYEE") {
+  if (roleLabel === 'EMPLOYEE') {
     return prisma.appointment.findMany({
-      where: { employee_id: user.userId },
+      where: { employee_id: parseInt(user.id) }, // ✅ CORRIGÉ : user.id
       include: {
-        user: true,
-        service: true
-      }
+        user:    { select: { id: true, firstname: true, lastname: true, email: true, phone: true } },
+        service: { select: { id: true, name: true, price: true } }
+      },
+      orderBy: { date: 'desc' }
     });
   }
 
+  // UTILISATEUR : ses propres commandes
   return prisma.appointment.findMany({
-    where: { user_id: user.userId },
+    where: { user_id: parseInt(user.id) }, // ✅ CORRIGÉ : user.id
     include: {
-      employee: true,
-      service: true
-    }
+      employee: { select: { id: true, firstname: true, lastname: true } },
+      service:  { select: { id: true, name: true, price: true } }
+    },
+    orderBy: { date: 'desc' }
   });
 };
 
-// Mettre à jour le statut d'un rendez-vous
+// Mettre à jour le statut (ADMIN ou EMPLOYEE)
 export const updateAppointmentStatus = async (id, status, user) => {
-  const appointment = await prisma.appointment.findUnique({
-    where: { id }
-  });
+  const roleLabel = user.role?.label || user.role; // ✅ CORRIGÉ
 
-  if (!appointment) throw new Error("Rendez-vous introuvable");
+  if (roleLabel !== 'ADMIN' && roleLabel !== 'EMPLOYEE') {
+    throw new Error("Accès refusé : réservé aux employés et administrateurs");
+  }
 
-  // Seul ADMIN ou EMPLOYEE peut modifier
-  if (user.role !== "ADMIN" && user.role !== "EMPLOYEE") {
-    throw new Error("Non autorisé");
+  const appointment = await prisma.appointment.findUnique({ where: { id } });
+  if (!appointment) throw new Error("Commande introuvable");
+
+  // Vérifier que les statuts sont valides
+  const validStatuses = ['PENDING', 'ACCEPTE', 'EN_PREPARATION', 'TERMINE', 'ANNULE'];
+  if (!validStatuses.includes(status)) {
+    throw new Error(`Statut invalide. Valeurs possibles: ${validStatuses.join(', ')}`);
   }
 
   return prisma.appointment.update({
     where: { id },
-    data: { status }
+    data: { status },
+    include: {
+      user:     { select: { firstname: true, lastname: true, email: true } },
+      employee: { select: { firstname: true, lastname: true } },
+      service:  { select: { name: true, price: true } }
+    }
   });
 };

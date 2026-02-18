@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Compte - Vite & Gourmand</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>Vite & Gourmand</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="services.html">Nos Services</a></li>
+                <li><a href="profile.html" id="profileLink" class="active">Mon Compte</a></li>
+                <li><a href="#" id="logoutLink">Déconnexion</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <section class="profile-section">
+            <div class="container">
+                <h1>Mon Espace Personnel</h1>
+
+                <div class="profile-grid">
+                    <div class="profile-card">
+                        <h2>Mes Informations</h2>
+                        <div id="profileInfo" class="profile-info">
+                            <div class="loading">Chargement...</div>
+                        </div>
+                        <button class="btn btn-secondary" onclick="toggleEditMode()">Modifier mes informations</button>
+
+                        <div id="editForm" style="display:none;">
+                            <form id="updateProfileForm" class="profile-form">
+                                <div class="form-group">
+                                    <label>Prénom</label>
+                                    <input type="text" id="editFirstname" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Nom</label>
+                                    <input type="text" id="editLastname" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Téléphone</label>
+                                    <input type="tel" id="editPhone">
+                                </div>
+                                <div class="form-group">
+                                    <label>Adresse</label>
+                                    <input type="text" id="editAddress">
+                                </div>
+                                <div class="form-group">
+                                    <label>Ville</label>
+                                    <input type="text" id="editCity">
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                    <button type="button" class="btn btn-secondary" onclick="toggleEditMode()">Annuler</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="profile-card">
+                        <h2>Mes Commandes</h2>
+                        <div id="appointmentsList">
+                            <div class="loading">Chargement des commandes...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Vite & Gourmand</h3>
+                    <p>Restauration événementielle d'exception depuis 2004</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Nos Horaires</h3>
+                    <div id="footerHoraires"><p class="loading-small">Chargement...</p></div>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact</h3>
+                    <p>Email: contact@vitegourmand.fr</p>
+                    <p>Tél: 01 23 45 67 89</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Vite & Gourmand. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="api.js"></script>
+    <script src="auth.js"></script>
+    <script src="footer-horaires.js"></script>
+    <script>
+        let currentUser = null;
+
+        async function loadProfile() {
+            try {
+                const response = await api.get('/auth/me');
+                currentUser = response.user;
+
+                document.getElementById('profileInfo').innerHTML = `
+                    <p><strong>Nom:</strong> ${currentUser.firstname} ${currentUser.lastname}</p>
+                    <p><strong>Email:</strong> ${currentUser.email}</p>
+<p><strong>Rôle:</strong> ${currentUser.role.label}</p>
+                    ${currentUser.phone ? `<p><strong>Téléphone:</strong> ${currentUser.phone}</p>` : ''}
+                    ${currentUser.address ? `<p><strong>Adresse:</strong> ${currentUser.address}</p>` : ''}
+                    ${currentUser.city ? `<p><strong>Ville:</strong> ${currentUser.city}</p>` : ''}
+                `;
+
+                document.getElementById('editFirstname').value = currentUser.firstname || '';
+                document.getElementById('editLastname').value = currentUser.lastname || '';
+                document.getElementById('editPhone').value = currentUser.phone || '';
+                document.getElementById('editAddress').value = currentUser.address || '';
+                document.getElementById('editCity').value = currentUser.city || '';
+            } catch (error) {
+                if (error.message.includes('401') || error.message.includes('403')) {
+                    logout();
+                }
+            }
+        }
+
+        async function loadAppointments() {
+            try {
+                const appointments = await api.get('/appointments/me') || [];
+                const listDiv = document.getElementById('appointmentsList');
+
+                if (appointments.length === 0) {
+                    listDiv.innerHTML = '<p class="no-results">Aucune commande pour le moment</p>';
+                    return;
+                }
+
+                listDiv.innerHTML = appointments.map(apt => `
+                    <div class="appointment-card">
+                        <h3>${apt.service?.name || 'Service inconnu'}</h3>
+                        <p><strong>Date:</strong> ${new Date(apt.date).toLocaleString('fr-FR')}</p>
+                        <p><strong>Statut:</strong> <span class="status-badge status-${apt.status.toLowerCase()}">${apt.status}</span></p>
+                        <p><strong>Employé:</strong> ${apt.employee?.firstname} ${apt.employee?.lastname}</p>
+                    </div>
+                `).join('');
+            } catch (error) {
+                document.getElementById('appointmentsList').innerHTML =
+                    '<p class="error">Erreur lors du chargement des commandes</p>';
+            }
+        }
+
+        function toggleEditMode() {
+            const infoDiv = document.getElementById('profileInfo');
+            const editDiv = document.getElementById('editForm');
+            const isEditing = editDiv.style.display !== 'none';
+            infoDiv.style.display = isEditing ? 'block' : 'none';
+            editDiv.style.display = isEditing ? 'none' : 'block';
+        }
+
+        document.getElementById('updateProfileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                await api.put('/auth/me', {
+                    firstname: document.getElementById('editFirstname').value,
+                    lastname: document.getElementById('editLastname').value,
+                    phone: document.getElementById('editPhone').value,
+                    address: document.getElementById('editAddress').value,
+                    city: document.getElementById('editCity').value
+                });
+                alert('Profil mis à jour avec succès');
+                toggleEditMode();
+                loadProfile();
+            } catch (error) {
+                alert('Erreur lors de la mise à jour: ' + error.message);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!isAuthenticated()) {
+                window.location.href = 'login.html';
+                return;
+            }
+            updateNavigation();
+            loadProfile();
+            loadAppointments();
+        });
+    </script>
+</body>
+</html>

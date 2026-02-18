@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Employé - Vite & Gourmand</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>Vite & Gourmand</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Accueil</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="employee.html" class="active">Espace Employé</a></li>
+                <li><a href="profile.html" id="profileLink" class="active">Mon Compte</a></li>
+
+                <li><a href="#" id="logoutLink">Déconnexion</a></li>
+            </ul>
+            <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="employee-section">
+            <div class="container">
+                <div class="employee-header">
+                    <h1>Espace Employé</h1>
+                    <p class="employee-subtitle" id="welcomeMessage">Bienvenue</p>
+                </div>
+
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">📋</div>
+                        <div class="stat-content">
+                            <h3 id="myAppointmentsCount">-</h3>
+                            <p>Commandes assignées</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⏳</div>
+                        <div class="stat-content">
+                            <h3 id="pendingCount">-</h3>
+                            <p>En attente</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-content">
+                            <h3 id="completedCount">-</h3>
+                            <p>Terminées</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="employee-tabs">
+                    <button class="tab-button active" onclick="switchTab('appointments', event)">Mes Commandes</button>
+                    <button class="tab-button" onclick="switchTab('catalog', event)">Gérer le Catalogue</button>
+                </div>
+
+                <div id="appointmentsTab" class="tab-content active">
+                    <div class="section-header">
+                        <h2>Mes Commandes Assignées</h2>
+                        <div class="filter-buttons">
+                            <button class="btn btn-sm btn-secondary active" onclick="filterMyAppointments('all', event)">Toutes</button>
+                            <button class="btn btn-sm btn-secondary" onclick="filterMyAppointments('PENDING', event)">En attente</button>
+                            <button class="btn btn-sm btn-secondary" onclick="filterMyAppointments('ACCEPTE', event)">Acceptées</button>
+                            <button class="btn btn-sm btn-secondary" onclick="filterMyAppointments('EN_PREPARATION', event)">En préparation</button>
+                            <button class="btn btn-sm btn-secondary" onclick="filterMyAppointments('TERMINE', event)">Terminées</button>
+                        </div>
+                    </div>
+                    <div id="myAppointmentsList" class="appointments-grid">
+                        <div class="loading">Chargement de vos commandes...</div>
+                    </div>
+                </div>
+
+                <div id="catalogTab" class="tab-content">
+                    <div class="catalog-grid">
+                        <div class="catalog-section">
+                            <div class="section-header">
+                                <h2>Gestion des Plats</h2>
+                                <button class="btn btn-primary" onclick="showCreatePlatModal()">+ Nouveau plat</button>
+                            </div>
+                            <div id="employeePlatsList" class="admin-list">
+                                <div class="loading">Chargement...</div>
+                            </div>
+                        </div>
+                        <div class="catalog-section">
+                            <div class="section-header">
+                                <h2>Gestion des Services</h2>
+                                <button class="btn btn-primary" onclick="showCreateServiceModal()">+ Nouveau service</button>
+                            </div>
+                            <div id="employeeServicesList" class="admin-list">
+                                <div class="loading">Chargement...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal modification statut -->
+    <div id="statusModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeAllModals()">&times;</span>
+            <h2>Modifier le Statut de la Commande</h2>
+            <div id="appointmentDetails"></div>
+            <form id="updateStatusForm">
+                <div class="form-group">
+                    <label for="newStatus">Nouveau statut</label>
+                    <select id="newStatus" required>
+                        <option value="PENDING">En attente</option>
+                        <option value="ACCEPTE">Accepté</option>
+                        <option value="EN_PREPARATION">En préparation</option>
+                        <option value="TERMINE">Terminé</option>
+                        <option value="ANNULE">Annulé</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeAllModals()">Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal création plat -->
+    <div id="createPlatModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeAllModals()">&times;</span>
+            <h2>Créer un Nouveau Plat</h2>
+            <form id="createPlatForm">
+                <div class="form-group">
+                    <label for="platTitle">Nom du plat *</label>
+                    <input type="text" id="platTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="platPhoto">URL de la photo</label>
+                    <input type="url" id="platPhoto" placeholder="https://...">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Créer le plat</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeAllModals()">Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal création service -->
+    <div id="createServiceModal" class="modal">
+        <div class="modal-content modal-large">
+            <span class="modal-close" onclick="closeAllModals()">&times;</span>
+            <h2>Créer un Nouveau Service</h2>
+            <form id="createServiceForm">
+                <div class="form-group">
+                    <label for="serviceName">Nom du service *</label>
+                    <input type="text" id="serviceName" required>
+                </div>
+                <div class="form-group">
+                    <label for="serviceDescription">Description *</label>
+                    <textarea id="serviceDescription" rows="3" required></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="servicePrice">Prix (€) *</label>
+                        <input type="number" id="servicePrice" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceDuration">Durée (minutes)</label>
+                        <input type="number" id="serviceDuration" value="120">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="serviceTheme">Thème</label>
+                        <select id="serviceTheme"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceRegime">Régime</label>
+                        <select id="serviceRegime"></select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Plats associés</label>
+                    <div id="platsCheckboxes" class="checkbox-group"></div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Créer le service</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeAllModals()">Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Vite & Gourmand</h3>
+                    <p>Restauration événementielle d'exception depuis 2004</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Nos Horaires</h3>
+                    <div id="footerHoraires"><p class="loading-small">Chargement...</p></div>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact</h3>
+                    <p>Email: contact@vitegourmand.fr</p>
+                    <p>Tél: 01 23 45 67 89</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Vite & Gourmand. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="api.js"></script>
+    <script src="auth.js"></script>
+    <script src="footer-horaires.js"></script>
+    <script>
+        let myAppointments = [];
+        let currentAppointmentId = null;
+
+        function toggleMobileMenu() {
+            document.querySelector('.nav-menu').classList.toggle('active');
+        }
+
+        function checkEmployeeAccess() {
+            const user = getCurrentUser();
+            if (!user || (user.role.label !== 'EMPLOYEE' && user.role.label !== 'ADMIN')) {
+                //alert('Accès réservé aux employés');
+                window.location.href = 'index.html';
+                return false;
+            }
+            document.getElementById('welcomeMessage').textContent = `Bienvenue ${user.firstname} ${user.lastname}`;
+            return true;
+        }
+
+        async function loadMyAppointments() {
+            try {
+                const appointments = await api.get('/appointments');
+                const user = getCurrentUser();
+                myAppointments = appointments.filter(apt => apt.employee_id === user.id);
+                displayMyAppointments(myAppointments);
+                updateStats();
+            } catch (error) {
+                console.error('Erreur chargement commandes:', error);
+            }
+        }
+
+        function displayMyAppointments(appointments) {
+            const listDiv = document.getElementById('myAppointmentsList');
+            if (!appointments || appointments.length === 0) {
+                listDiv.innerHTML = '<div class="no-results-full">Aucune commande assignée</div>';
+                return;
+            }
+            listDiv.innerHTML = appointments.map(apt => `
+                <div class="appointment-card-full">
+                    <div class="appointment-status">
+                        <span class="status-badge status-${apt.status.toLowerCase()}">${apt.status}</span>
+                    </div>
+                    <h3>${apt.service?.name || 'Service supprimé'}</h3>
+                    <div class="appointment-info">
+                        <p><strong>Client:</strong> ${apt.user?.firstname} ${apt.user?.lastname}</p>
+                        <p><strong>Email:</strong> ${apt.user?.email}</p>
+                        <p><strong>Téléphone:</strong> ${apt.user?.phone || 'Non renseigné'}</p>
+                        <p><strong>Date:</strong> ${new Date(apt.date).toLocaleString('fr-FR')}</p>
+                        <p><strong>Prix:</strong> ${apt.service?.price} €</p>
+                    </div>
+                    <div class="appointment-actions">
+                        <button class="btn btn-primary" onclick="showStatusModal(${apt.id}, '${apt.status}')">
+                            Modifier le statut
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // FIX : event passé en paramètre explicitement
+        function filterMyAppointments(status, e) {
+            document.querySelectorAll('.filter-buttons .btn').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+            if (status === 'all') {
+                displayMyAppointments(myAppointments);
+            } else {
+                displayMyAppointments(myAppointments.filter(apt => apt.status === status));
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('myAppointmentsCount').textContent = myAppointments.length;
+            document.getElementById('pendingCount').textContent = myAppointments.filter(a => a.status === 'PENDING').length;
+            document.getElementById('completedCount').textContent = myAppointments.filter(a => a.status === 'TERMINE').length;
+        }
+
+        function showStatusModal(appointmentId, currentStatus) {
+            currentAppointmentId = appointmentId;
+            const appointment = myAppointments.find(a => a.id === appointmentId);
+
+            document.getElementById('appointmentDetails').innerHTML = `
+                <div class="modal-info">
+                    <p><strong>Service:</strong> ${appointment.service?.name}</p>
+                    <p><strong>Client:</strong> ${appointment.user?.firstname} ${appointment.user?.lastname}</p>
+                    <p><strong>Statut actuel:</strong> <span class="status-badge status-${currentStatus.toLowerCase()}">${currentStatus}</span></p>
+                </div>
+            `;
+            document.getElementById('newStatus').value = currentStatus;
+            document.getElementById('statusModal').style.display = 'block';
+        }
+
+        document.getElementById('updateStatusForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                await api.put(`/appointments/${currentAppointmentId}`, { status: document.getElementById('newStatus').value });
+                alert('Statut mis à jour avec succès');
+                closeAllModals();
+                loadMyAppointments();
+            } catch (error) {
+                alert('Erreur: ' + error.message);
+            }
+        });
+
+        async function loadEmployeePlats() {
+            try {
+                const plats = await api.get('/plats');
+                const listDiv = document.getElementById('employeePlatsList');
+                if (plats.length === 0) {
+                    listDiv.innerHTML = '<p class="no-results">Aucun plat</p>';
+                    return;
+                }
+                listDiv.innerHTML = plats.map(plat => `
+                    <div class="admin-item">
+                        <h3>${plat.title}</h3>
+                        ${plat.photo ? `<img src="${plat.photo}" alt="${plat.title}" class="item-image-small">` : ''}
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Erreur plats:', error);
+            }
+        }
+
+        async function loadEmployeeServices() {
+            try {
+                const response = await api.get('/services');
+                const services = response.services || [];
+                const listDiv = document.getElementById('employeeServicesList');
+                if (services.length === 0) {
+                    listDiv.innerHTML = '<p class="no-results">Aucun service</p>';
+                    return;
+                }
+                listDiv.innerHTML = services.map(service => `
+                    <div class="admin-item">
+                        <div class="item-header">
+                            <h3>${service.name}</h3>
+                            <span class="item-price">${service.price} €</span>
+                        </div>
+                        <p>${service.description || ''}</p>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Erreur services:', error);
+            }
+        }
+
+        // FIX : event passé en paramètre explicitement
+        function switchTab(tabName, e) {
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            e.target.classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+
+            if (tabName === 'catalog') {
+                loadEmployeePlats();
+                loadEmployeeServices();
+            }
+        }
+
+        function showCreatePlatModal() {
+            document.getElementById('createPlatModal').style.display = 'block';
+        }
+
+        async function showCreateServiceModal() {
+            await loadFormData();
+            document.getElementById('createServiceModal').style.display = 'block';
+        }
+
+        function closeAllModals() {
+            document.querySelectorAll('.modal').forEach(modal => modal.style.display = 'none');
+        }
+
+        async function loadFormData() {
+            try {
+                const [themes, regimes, plats] = await Promise.all([
+                    api.get('/themes').then(r => r.themes || []),
+                    api.get('/regimes').then(r => r.regimes || []),
+                    api.get('/plats')
+                ]);
+
+                document.getElementById('serviceTheme').innerHTML =
+                    '<option value="">Aucun</option>' + themes.map(t => `<option value="${t.id}">${t.label}</option>`).join('');
+
+                document.getElementById('serviceRegime').innerHTML =
+                    '<option value="">Aucun</option>' + regimes.map(r => `<option value="${r.id}">${r.label}</option>`).join('');
+
+                document.getElementById('platsCheckboxes').innerHTML = plats.map(p => `
+                    <label class="checkbox-label">
+                        <input type="checkbox" value="${p.id}"> ${p.title}
+                    </label>
+                `).join('');
+            } catch (error) {
+                console.error('Erreur:', error);
+            }
+        }
+
+        document.getElementById('createPlatForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            try {
+                await api.post('/plats', {
+                    title: document.getElementById('platTitle').value,
+                    photo: document.getElementById('platPhoto').value || null
+                });
+                alert('Plat créé avec succès');
+                closeAllModals();
+                loadEmployeePlats();
+            } catch (error) {
+                alert('Erreur: ' + error.message);
+            }
+        });
+
+        document.getElementById('createServiceForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const selectedPlats = Array.from(document.querySelectorAll('#platsCheckboxes input:checked'))
+                .map(cb => parseInt(cb.value));
+
+            try {
+                await api.post('/services', {
+                    name: document.getElementById('serviceName').value,
+                    description: document.getElementById('serviceDescription').value,
+                    price: parseFloat(document.getElementById('servicePrice').value),
+                    duration: parseInt(document.getElementById('serviceDuration').value) || 120,
+                    theme_id: parseInt(document.getElementById('serviceTheme').value) || null,
+                    regime_id: parseInt(document.getElementById('serviceRegime').value) || null,
+                    plat_ids: selectedPlats
+                });
+                alert('Service créé avec succès');
+                closeAllModals();
+                loadEmployeeServices();
+            } catch (error) {
+                alert('Erreur: ' + error.message);
+            }
+        });
+
+        window.onclick = (e) => {
+            if (e.target.classList.contains('modal')) closeAllModals();
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!isAuthenticated()) {
+                window.location.href = 'login.html';
+                return;
+            }
+            if (!checkEmployeeAccess()) return;
+
+            updateNavigation();
+            loadMyAppointments();
+        });
+    </script>
+</body>
+</html>
