@@ -1,6 +1,6 @@
 [build]
 builder = "nixpacks"
-buildCommand = "npm install -g serve"
+buildCommand = "npx -y serve --version"
 
 [deploy]
-startCommand = "serve . -p 80"
+startCommand = "npx serve . -p 80"
