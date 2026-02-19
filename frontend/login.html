@@ -110,9 +110,9 @@
                     localStorage.setItem('user', JSON.stringify(response.user));
 
                     const role = response.user?.role?.label;
-                    if (role === 'admin') {
+                    if (role === 'ADMIN') {
                         window.location.href = 'admin.html';
-                    } else if (role === 'employee') {
+                    } else if (role === 'EMPLOYEE') {
                         window.location.href = 'employee.html';
                     } else {
                         window.location.href = 'profile.html';
