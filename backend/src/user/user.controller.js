@@ -1,4 +1,3 @@
-import prisma from '../prisma.js';
 import { createUser, loginUser, getUserById, updateUser, deleteUser as deleteUserFromDB } from './user.model.js';
 
 // Inscription d'un nouvel utilisateur
