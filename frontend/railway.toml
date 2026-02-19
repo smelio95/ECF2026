@@ -1,6 +1,2 @@
-[build]
-builder = "nixpacks"
-buildCommand = "npx -y serve --version"
-
 [deploy]
-startCommand = "npx serve . -p 80"
+startCommand = "npx serve . -p $PORT"
