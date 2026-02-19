@@ -116,3 +116,53 @@ export const deleteProfile = async (req, res) => {
     });
   }
 };
+
+export const getAllUsers = async (req, res) => {
+    try {
+        const users = await prisma.user.findMany({
+            select: {
+                id: true,
+                firstname: true,
+                lastname: true,
+                email: true,
+                phone: true,
+                address: true,
+                city: true,
+                role: {
+                    select: { label: true }
+                },
+                created_at: true
+            },
+            orderBy: { created_at: 'desc' }
+        });
+        res.json(users);
+    } catch (error) {
+        console.error('Erreur getAllUsers:', error);
+        res.status(500).json({ message: 'Erreur serveur' });
+    }
+};
+
+export const getEmployees = async (req, res) => {
+    try {
+        const employees = await prisma.user.findMany({
+            where: {
+                role: {
+                    label: { in: ['EMPLOYEE', 'ADMIN'] }
+                }
+            },
+            select: {
+                id: true,
+                firstname: true,
+                lastname: true,
+                role: {
+                    select: { label: true }
+                }
+            },
+            orderBy: { firstname: 'asc' }
+        });
+        res.json(employees);
+    } catch (error) {
+        console.error('Erreur getEmployees:', error);
+        res.status(500).json({ message: 'Erreur serveur' });
+    }
+};
