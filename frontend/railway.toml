@@ -1,2 +1,6 @@
-[static]
-path = "/"
+[build]
+builder = "nixpacks"
+buildCommand = "npm install -g serve"
+
+[deploy]
+startCommand = "serve . -p 80"
