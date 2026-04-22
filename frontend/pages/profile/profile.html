@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Compte - Vite &amp; Gourmand</title>
+    <link rel="stylesheet" href="../../shared/styles.css">
+    <link rel="stylesheet" href="profile.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand"><h1>Vite &amp; Gourmand</h1></div> 
+            <ul class="nav-menu">
+                <li><a href="../../index.html">Accueil</a></li>
+                <li><a href="../services/services.html">Nos Services</a></li>
+                <li><a href="profile.html" id="profileLink" class="active">Mon Compte</a></li>
+                <li><a href="#" id="logoutLink">Déconnexion</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <section class="profile-section">
+            <div class="container">
+                <h1>Mon Espace Personnel</h1>
+                <div class="profile-grid">
+                    <div class="profile-card">
+                        <h2>Mes Informations</h2>
+                        <div id="profileInfo" class="profile-info">
+                            <div class="loading">Chargement...</div>
+                        </div>
+                        <button class="btn btn-secondary" onclick="toggleEditMode()">Modifier mes informations</button>
+                        <div id="editForm" style="display:none;">
+                            <form id="updateProfileForm" class="profile-form">
+                                <div class="form-group">
+                                    <label>Prénom</label>
+                                    <input type="text" id="editFirstname" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Nom</label>
+                                    <input type="text" id="editLastname" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Téléphone</label>
+                                    <input type="tel" id="editPhone">
+                                </div>
+                                <div class="form-group">
+                                    <label>Adresse</label>
+                                    <input type="text" id="editAddress">
+                                </div>
+                                <div class="form-group">
+                                    <label>Ville</label>
+                                    <input type="text" id="editCity">
+                                </div>
+                                <div class="form-actions">
+                                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                    <button type="button" class="btn btn-secondary" onclick="toggleEditMode()">Annuler</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="profile-card">
+                        <h2>Mes Commandes</h2>
+                        <div id="appointmentsList">
+                            <div class="loading">Chargement des commandes...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+        <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Vite &amp; Gourmand</h3>
+                    <p>Restauration événementielle d'exception depuis 2004</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Nos Horaires</h3>
+                    <div id="footerHoraires"><p class="loading-small">Chargement...</p></div>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact</h3>
+                    <p>Email: contact@vitegourmand.fr</p>
+                    <p>Tél: 01 23 45 67 89</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Vite &amp; Gourmand. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>window.ROOT_PATH = "../../";</script>
+    <script src="../../shared/api.js"></script>
+    <script src="../../shared/auth.js"></script>
+    <script src="../../shared/footer-horaires.js"></script>
+    <script src="profile.js"></script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Vite &amp; Gourmand</title>
+    <link rel="stylesheet" href="../../shared/styles.css">
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand"><h1>Vite &amp; Gourmand</h1></div>
+            <ul class="nav-menu">
+                <li><a href="../../index.html">Accueil</a></li>
+                <li><a href="../services/services.html">Nos Services</a></li>
+                <li><a href="login.html" class="active">Connexion</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <section class="auth-section">
+            <div class="container">
+                <div class="auth-container">
+                    <h1>Connexion</h1>
+                    <p class="auth-subtitle">Accédez à votre espace personnel</p>
+                    <form id="loginForm" class="auth-form">
+                        <div id="errorMessage" class="error-message" style="display:none;"></div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required placeholder="votre@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Mot de passe</label>
+                            <input type="password" id="password" name="password" required placeholder="Votre mot de passe">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full" id="loginButton">Se connecter</button>
+                    </form>
+                    <div class="auth-links">
+                        <p>Pas encore de compte ? <a href="../register/register.html">Créer un compte</a></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+        <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Vite &amp; Gourmand</h3>
+                    <p>Restauration événementielle d'exception depuis 2004</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Nos Horaires</h3>
+                    <div id="footerHoraires"><p class="loading-small">Chargement...</p></div>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact</h3>
+                    <p>Email: contact@vitegourmand.fr</p>
+                    <p>Tél: 01 23 45 67 89</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Vite &amp; Gourmand. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>window.ROOT_PATH = "../../";</script>
+    <script src="../../shared/api.js"></script>
+    <script src="../../shared/footer-horaires.js"></script>
+    <script src="login.js"></script>
+</body>
+</html>

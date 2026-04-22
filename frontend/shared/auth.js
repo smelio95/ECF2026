@@ -1,4 +1,7 @@
 // Gestion de l'authentification
+// Les pages définissent window.ROOT_PATH = '../../' avant d'inclure ce fichier
+
+const ROOT = window.ROOT_PATH || './';
 
 function isAuthenticated() {
     const token = localStorage.getItem('token');
@@ -18,13 +21,13 @@ function getCurrentUser() {
 function logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    window.location.href = 'login.html';
+    window.location.href = ROOT + 'pages/login/login.html';
 }
 
 function updateNavigation() {
-    const loginLink = document.getElementById('loginLink');
+    const loginLink   = document.getElementById('loginLink');
     const profileLink = document.getElementById('profileLink');
-    const logoutLink = document.getElementById('logoutLink');
+    const logoutLink  = document.getElementById('logoutLink');
 
     if (!loginLink || !profileLink || !logoutLink) return;
 
@@ -32,10 +35,10 @@ function updateNavigation() {
     const user = getCurrentUser();
 
     if (authenticated && user) {
-        loginLink.style.display = 'none';
+        loginLink.style.display   = 'none';
         profileLink.style.display = 'block';
-        profileLink.textContent = user.firstname || 'Mon Compte';
-        logoutLink.style.display = 'block';
+        profileLink.textContent   = user.firstname || 'Mon Compte';
+        logoutLink.style.display  = 'block';
 
         const navMenu = document.querySelector('.nav-menu');
         const existingSpaceLink = document.querySelector('.space-link');
@@ -44,18 +47,18 @@ function updateNavigation() {
         if (user.role.label === 'ADMIN') {
             const adminLink = document.createElement('li');
             adminLink.className = 'space-link';
-            adminLink.innerHTML = '<a href="admin.html">Espace Admin</a>';
+            adminLink.innerHTML = `<a href="${ROOT}pages/admin/admin.html">Espace Admin</a>`;
             navMenu.insertBefore(adminLink, profileLink.parentElement);
         } else if (user.role.label === 'EMPLOYEE') {
             const employeeLink = document.createElement('li');
             employeeLink.className = 'space-link';
-            employeeLink.innerHTML = '<a href="employee.html">Espace Employé</a>';
+            employeeLink.innerHTML = `<a href="${ROOT}pages/employee/employee.html">Espace Employé</a>`;
             navMenu.insertBefore(employeeLink, profileLink.parentElement);
         }
     } else {
-        loginLink.style.display = 'block';
+        loginLink.style.display   = 'block';
         profileLink.style.display = 'none';
-        logoutLink.style.display = 'none';
+        logoutLink.style.display  = 'none';
 
         const existingSpaceLink = document.querySelector('.space-link');
         if (existingSpaceLink) existingSpaceLink.remove();

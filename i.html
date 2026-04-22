@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <!-- Rend la page responsive sur mobile -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>First | Portfolio</title>
+
+    <!-- Bibliothèque d'icônes Font Awesome via CDN -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/...">
+
+    <!-- Plugin Ekko Lightbox pour afficher les images en plein écran -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/.../ekko-lightbox.css"/>
+
+    <!-- Framework CSS Bootstrap 4 via CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/.../bootstrap.min.css">
+
+    <!-- Polices Google Fonts personnalisées -->
+    <link href="https://fonts.googleapis.com/css?family=Kaushan+Script" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+
+    <!-- Feuille de style CSS personnalisée -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- HEADER : section d'accueil avec image de fond pleine hauteur -->
+    <header id="top">
+        <div class="container">
+
+            <!-- Navbar Bootstrap fixe en haut, thème sombre -->
+            <!-- navbar-expand-md : menu burger automatique sous 768px -->
+            <!-- fixed-top : reste visible lors du défilement -->
+            <nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-top" id="main-nav">
+                <div class="container">
+                    <!-- Logo/nom du site -->
+                    <a href="index.html" class="navbar-brand">First</a>
+
+                    <!-- Bouton burger visible uniquement sur mobile -->
+                    <button class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <!-- Menu de navigation qui se cache/affiche sur mobile -->
+                    <div class="collapse navbar-collapse" id="navbarCollapse">
+                        <ul class="navbar-nav ml-auto" id="liens">
+                            <!-- Liens d'ancrage vers les sections de la page -->
+                            <li class="nav-item mr-1"><a href="#top" class="nav-link">Accueil</a></li>
+                            <li class="nav-item mr-1"><a href="#projet" class="nav-link">Projets</a></li>
+                            <li class="nav-item mr-1"><a href="#about" class="nav-link">A propos</a></li>
+                            <li class="nav-item mr-1"><a href="#contact" class="nav-link">Contact</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Texte de présentation centré sur le header -->
+            <div class="text-intro">
+                <div class="preTxt font-italic">Bienvenue sur notre site,</div>
+                <h1>First</h1>
+                <!-- Boutons d'appel à l'action -->
+                <a href="#" class="btn btn-dark mt-3">En Savoir Plus</a>
+                <a href="#" class="btn btn-outline-dark mt-3">Mes Projets</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- GALERIE : section portfolio avec grille Bootstrap -->
+    <section id="galerie">
+        <div class="container">
+            <h2 class="text-center h2Photos">Projets</h2>
+            <div class="row justify-content-center">
+                <div class="col-md-10">
+                    <div class="row mb-3">
+                        <!-- col-sm-4 : 3 images par ligne sur desktop, 1 sur mobile -->
+                        <!-- data-toggle="lightbox" : active le plugin Ekko Lightbox -->
+                        <a href="https://unsplash.it/1200/768.jpg?image=251"
+                           data-toggle="lightbox"
+                           data-gallery="example-gallery"
+                           class="col-sm-4">
+                            <img src="https://unsplash.it/600.jpg?image=251" class="img-fluid">
+                        </a>
+                        <!-- ... autres images identiques ... -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECTION CONTACT : formulaire avec icônes Font Awesome -->
+    <section id="contact" class="bg-light py-5">
+        <div class="container">
+            <form>
+                <!-- input-group : champ avec icône à gauche -->
+                <div class="input-group input-group-lg mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">
+                            <!-- Icône Font Awesome utilisateur -->
+                            <i class="fas fa-user"></i>
+                        </span>
+                    </div>
+                    <input type="text" class="form-control" placeholder="Nom">
+                </div>
+                <!-- Champs Email et Message identiques -->
+            </form>
+        </div>
+    </section>
+
+    <!-- Scripts placés en bas pour ne pas bloquer le chargement de la page -->
+    <script src="https://code.jquery.com/.../jquery.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/.../popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/.../bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/.../ekko-lightbox.min.js"></script>
+</body>
+</html>
+
+<style>
+/* HEADER - image de fond pleine largeur */
+header {
+    background: url("img/bgphotshop.png");
+    background-size: cover;       /* l'image couvre tout l'espace */
+    background-position: center;  /* centrée même si rognée */
+    height: 50vh;                 /* occupe 50% de la hauteur de l'écran */
+    border-bottom: 1px solid #000;
+}
+
+/* NAVBAR - surcharge Bootstrap avec !important */
+/* !important est nécessaire car Bootstrap définit ses propres valeurs */
+.navbar-brand {
+    font-size: 45px !important;        /* écrase la valeur Bootstrap */
+    font-family: 'Kaushan Script' !important;
+    transition: all 0.4s ease;        /* animation fluide au survol */
+}
+
+/* TITRE PRINCIPAL */
+h1 {
+    font-size: 150px;           /* grande taille sur desktop */
+    font-family: 'Kaushan Script';
+    font-weight: 700;
+}
+
+/* RESPONSIVE - media query sous 800px (tablette) */
+@media screen and (max-width: 800px) {
+    header { height: 75vh; }    /* plus haute car écran plus petit */
+    h1 { font-size: 81px; }     /* titre réduit pour tenir sur l'écran */
+}
+
+/* RESPONSIVE - media query sous 500px (mobile) */
+@media screen and (max-width: 500px) {
+    header { height: 55vh; }
+    h1 { font-size: 51px; }     /* encore réduit sur petit écran */
+    .text-intro a {
+        transform: scale(0.8);  /* boutons légèrement réduits */
+    }
+}</style>

@@ -517,11 +517,11 @@ async function main() {
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 }
 
-main()
+main() 
   .catch((e) => {
     console.error('❌ Erreur lors du seeding:', e);
     process.exit(1);
-  })
+  }) 
   .finally(async () => {
     await prisma.$disconnect();
   });

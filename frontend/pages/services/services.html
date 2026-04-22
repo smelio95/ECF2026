@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nos Services - Vite &amp; Gourmand</title>
+    <link rel="stylesheet" href="../../shared/styles.css">
+    <link rel="stylesheet" href="services.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand"><h1>Vite &amp; Gourmand</h1></div>
+            <ul class="nav-menu">
+                <li><a href="../../index.html">Accueil</a></li>
+                <li><a href="services.html" class="active">Nos Services</a></li>
+                <li><a href="../login/login.html" id="loginLink">Connexion</a></li>
+                <li><a href="../profile/profile.html" id="profileLink" style="display:none;">Mon Compte</a></li>
+                <li><a href="#" id="logoutLink" style="display:none;">Déconnexion</a></li>
+            </ul>
+            <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="page-header">
+            <div class="container">
+                <h1>Nos Services de Restauration</h1>
+                <p>Découvrez nos menus personnalisés pour tous vos événements</p>
+            </div>
+        </section>
+
+        <section class="services-section">
+            <div class="container">
+                <div class="filters-section">
+                    <h2>Filtrer les services</h2>
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label for="priceMax">Prix maximum (€)</label>
+                            <input type="number" id="priceMax" placeholder="Ex: 100">
+                        </div>
+                        <div class="filter-group">
+                            <label for="themeFilter">Thème</label>
+                            <select id="themeFilter">
+                                <option value="">Tous les thèmes</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="regimeFilter">Régime</label>
+                            <select id="regimeFilter">
+                                <option value="">Tous les régimes</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <button class="btn btn-primary"   onclick="applyFilters()">Appliquer les filtres</button>
+                            <button class="btn btn-secondary" onclick="resetFilters()">Réinitialiser</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="services-results">
+                    <h2 id="resultsTitle">Tous nos services</h2>
+                    <div class="services-grid" id="servicesGrid">
+                        <div class="loading">Chargement des services...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+        <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Vite &amp; Gourmand</h3>
+                    <p>Restauration événementielle d'exception depuis 2004</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Nos Horaires</h3>
+                    <div id="footerHoraires"><p class="loading-small">Chargement...</p></div>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact</h3>
+                    <p>Email: contact@vitegourmand.fr</p>
+                    <p>Tél: 01 23 45 67 89</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Vite &amp; Gourmand. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>window.ROOT_PATH = "../../";</script>
+    <script src="../../shared/api.js"></script>
+    <script src="../../shared/auth.js"></script>
+    <script src="../../shared/footer-horaires.js"></script>
+    <script src="services.js"></script>
+</body>
+</html>

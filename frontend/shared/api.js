@@ -1,5 +1,5 @@
 // Configuration de l'API
-const API_BASE_URL = 'https://ecf2026-production.up.railway.app/api';
+const API_BASE_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:3000/api' : 'https://ecf2026-production.up.railway.app/api';
 
 // Module API pour centraliser toutes les requêtes
 const api = {

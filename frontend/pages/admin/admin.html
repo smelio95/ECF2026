@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Administrateur - Vite & Gourmand</title>
+    <link rel="stylesheet" href="../../shared/styles.css">
+    <link rel="stylesheet" href="admin.css">
+    <style>
+        .admin-section { padding: 2rem 0 4rem; }
+        .admin-header { margin-bottom: 2rem; }
+        .admin-header h1 { color: var(--primary-color); font-size: 2rem; }
+        .admin-subtitle { color: var(--text-light); margin-top: .3rem; }
+
+        .dashboard-stats { display: grid; grid-template-columns: repeat(auto-fit,minmax(150px,1fr)); gap: 1.2rem; margin-bottom: 2rem; }
+        .stat-card { background: white; border-radius: 12px; padding: 1.4rem; box-shadow: var(--shadow); display: flex; align-items: center; gap: 1rem; }
+        .stat-icon { font-size: 2rem; }
+        .stat-content h3 { font-size: 1.8rem; color: var(--primary-color); }
+        .stat-content p { font-size: .85rem; color: var(--text-light); }
+
+        .admin-tabs { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.5rem; }
+        .tab-button { padding: .6rem 1.2rem; border: 2px solid var(--border-color); background: white; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: .9rem; transition: all .2s; }
+        .tab-button.active, .tab-button:hover { background: var(--primary-color); color: white; border-color: var(--primary-color); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; flex-wrap: wrap; gap: .5rem; }
+        .section-header h2 { color: var(--primary-color); }
+        .filter-buttons { display: flex; flex-wrap: wrap; gap: .4rem; }
+
+        .admin-list { display: flex; flex-direction: column; gap: .8rem; }
+        .admin-item { background: white; border-radius: 10px; padding: 1.2rem 1.4rem; box-shadow: var(--shadow); }
+        .item-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: .4rem; flex-wrap: wrap; }
+        .item-header h3, .item-header h4 { color: var(--primary-color); }
+        .item-price { color: var(--secondary-color); font-weight: 700; font-size: 1.1rem; white-space: nowrap; }
+        .item-actions { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .8rem; }
+        .item-meta { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .5rem; }
+        .item-image { width: 80px; height: 60px; object-fit: cover; border-radius: 6px; margin-top: .5rem; }
+        .item-date { color: var(--text-light); font-size: .85rem; margin-top: .3rem; }
+
+        .user-group { margin-bottom: 1.8rem; }
+        .user-group-title { color: var(--text-light); font-size: .82rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: .7rem; padding-bottom: .4rem; border-bottom: 2px solid var(--light-bg); }
+        .user-info-row { display: flex; align-items: flex-start; gap: 1rem; }
+        .user-avatar { width: 38px; height: 38px; border-radius: 50%; background: var(--accent-color); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .9rem; flex-shrink: 0; }
+        .role-badge { padding: .2rem .7rem; border-radius: 20px; font-size: .78rem; font-weight: 700; display: inline-block; margin-left: .5rem; }
+        .role-ADMIN { background: #fde8e8; color: #c0392b; }
+        .role-EMPLOYEE { background: #e8f4fd; color: #2980b9; }
+        .role-UTILISATEUR { background: #e8fdf0; color: #27ae60; }
+
+        .review-stars-display { color: #f39c12; }
+        .admin-item.review-pending { border-left: 4px solid var(--warning-color); }
+        .admin-item.review-approved { border-left: 4px solid var(--success-color); }
+        .admin-item.review-rejected { border-left: 4px solid var(--danger-color); opacity: .7; }
+
+        .horaire-grid { display: flex; flex-direction: column; gap: .7rem; }
+        .horaire-row { display: grid; grid-template-columns: 120px 1fr 1fr 60px; gap: 1rem; align-items: center; background: white; padding: .9rem 1.2rem; border-radius: 8px; box-shadow: var(--shadow); }
+        .horaire-row input { border: 1px solid var(--border-color); border-radius: 6px; padding: .4rem .7rem; font-size: .9rem; width: 100%; }
+        .horaire-status { font-size: .85rem; font-weight: 600; }
+
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 2000; overflow-y: auto; padding: 2rem 1rem; }
+        .modal-content { background: white; border-radius: 14px; padding: 2rem; max-width: 560px; margin: auto; position: relative; }
+        .modal-large { max-width: 760px; }
+        .modal-close { position: absolute; top: 1rem; right: 1.2rem; font-size: 1.6rem; cursor: pointer; color: var(--text-light); line-height: 1; }
+        .modal-close:hover { color: var(--danger-color); }
+        .modal-info { background: var(--light-bg); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: .4rem; font-size: .9rem; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: .6rem .9rem; border: 1px solid var(--border-color); border-radius: 8px; font-size: .95rem; }
+        .form-group textarea { resize: vertical; }
+        .form-actions { display: flex; gap: .7rem; justify-content: flex-end; margin-top: 1.2rem; flex-wrap: wrap; }
+        .checkbox-group { display: flex; flex-wrap: wrap; gap: .5rem; max-height: 160px; overflow-y: auto; border: 1px solid var(--border-color); padding: .7rem; border-radius: 8px; }
+        .checkbox-label { display: flex; align-items: center; gap: .4rem; font-size: .9rem; cursor: pointer; }
+
+        .btn-danger { background: var(--danger-color) !important; color: white !important; }
+        .btn-danger:hover { background: #c0392b !important; }
+        .btn-success { background: var(--success-color) !important; color: white !important; }
+        .btn-warning { background: var(--warning-color) !important; color: white !important; }
+
+        .empty-state { text-align: center; padding: 3rem; color: var(--text-light); background: white; border-radius: 10px; box-shadow: var(--shadow); }
+
+        @media (max-width: 640px) {
+            .form-row { grid-template-columns: 1fr; }
+            .horaire-row { grid-template-columns: 1fr 1fr; }
+            .dashboard-stats { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand"><h1>Vite & Gourmand</h1></div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="../../index.html">Accueil</a></li>
+                <li><a href="../services/services.html">Services</a></li>
+                <li><a href="admin.html" class="active">Admin</a></li>
+                <li><a href="../profile/profile.html">Profil</a></li>
+                <li><a href="#" id="logoutLink">Déconnexion</a></li>
+            </ul>
+            <div class="mobile-menu-toggle" onclick="document.querySelector('.nav-menu').classList.toggle('active')">☰</div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="admin-section">
+            <div class="container">
+                <div class="admin-header">
+                    <h1>🛠️ Tableau de Bord Administrateur</h1>
+                    <p class="admin-subtitle">Gestion complète de la plateforme</p>
+                </div>
+
+                <!-- STATS -->
+                <div class="dashboard-stats">
+                    <div class="stat-card"><div class="stat-icon">📊</div><div class="stat-content"><h3 id="totalServices">-</h3><p>Services</p></div></div>
+                    <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-content"><h3 id="totalAppointments">-</h3><p>Commandes</p></div></div>
+                    <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-content"><h3 id="totalUsers">-</h3><p>Utilisateurs</p></div></div>
+                    <div class="stat-card"><div class="stat-icon">🍽️</div><div class="stat-content"><h3 id="totalPlats">-</h3><p>Plats</p></div></div>
+                    <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-content"><h3 id="totalPendingReviews">-</h3><p>Avis en attente</p></div></div>
+                </div>
+
+                <!-- ONGLETS -->
+                <div class="admin-tabs">
+                    <button class="tab-button active" onclick="switchTab('services',event)">🍽️ Services</button>
+                    <button class="tab-button" onclick="switchTab('plats',event)">🥘 Plats</button>
+                    <button class="tab-button" onclick="switchTab('appointments',event)">📅 Commandes</button>
+                    <button class="tab-button" onclick="switchTab('users',event)">👥 Utilisateurs</button>
+                    <button class="tab-button" onclick="switchTab('reviews',event)">⭐ Avis</button>
+                    <button class="tab-button" onclick="switchTab('horaires',event)">🕐 Horaires</button>
+                </div>
+
+                <!-- SERVICES TAB -->
+                <div id="servicesTab" class="tab-content active">
+                    <div class="section-header">
+                        <h2>Services / Menus</h2>
+                        <button class="btn btn-primary" onclick="showServiceModal()">+ Créer un service</button>
+                    </div>
+                    <div id="servicesList" class="admin-list"><div class="loading">Chargement...</div></div>
+                </div>
+
+                <!-- PLATS TAB -->
+                <div id="platsTab" class="tab-content">
+                    <div class="section-header">
+                        <h2>Plats du Catalogue</h2>
+                        <button class="btn btn-primary" onclick="showPlatModal()">+ Créer un plat</button>
+                    </div>
+                    <div id="platsList" class="admin-list"><div class="loading">Chargement...</div></div>
+                </div>
+
+                <!-- COMMANDES TAB -->
+                <div id="appointmentsTab" class="tab-content">
+                    <div class="section-header">
+                        <h2>Toutes les Commandes</h2>
+                        <div class="filter-buttons">
+                            <button class="btn btn-sm btn-secondary active" onclick="filterApt('all',event)">Toutes</button>
+                            <button class="btn btn-sm btn-secondary" onclick="filterApt('PENDING',event)">En attente</button>
+                            <button class="btn btn-sm btn-secondary" onclick="filterApt('ACCEPTE',event)">Acceptées</button>
+                            <button class="btn btn-sm btn-secondary" onclick="filterApt('EN_PREPARATION',event)">En préparation</button>
+                            <button class="btn btn-sm btn-secondary" onclick="filterApt('TERMINE',event)">Terminées</button>
+                            <button class="btn btn-sm btn-secondary" onclick="filterApt('ANNULE',event)">Annulées</button>
+                        </div>
+                    </div>
+                    <div id="appointmentsList" class="admin-list"><div class="loading">Chargement...</div></div>
+                </div>
+
+                <!-- UTILISATEURS TAB -->
+                <div id="usersTab" class="tab-content">
+                    <div class="section-header">
+                        <h2>Gestion des Utilisateurs</h2>
+                        <button class="btn btn-primary" onclick="showUserModal()">+ Créer un utilisateur</button>
+                    </div>
+                    <div id="usersList" class="admin-list"><div class="loading">Chargement...</div></div>
+                </div>
+
+                <!-- AVIS TAB -->
+                <div id="reviewsTab" class="tab-content">
+                    <div class="section-header">
+                        <h2>Modération des Avis</h2>
+                        <div class="filter-buttons">
+                            <button class="btn btn-sm btn-secondary active" onclick="filterReviews('all',event)">Tous</button>
+                            <button class="btn btn-sm btn-secondary" onclick="filterReviews('PENDING',event)">En attente</button>
+                            <button class="btn btn-sm btn-secondary" onclick="filterReviews('APPROVED',event)">Approuvés</button>
+                            <button class="btn btn-sm btn-secondary" onclick="filterReviews('REJECTED',event)">Rejetés</button>
+                        </div>
+                    </div>
+                    <div id="reviewsList" class="admin-list"><div class="loading">Chargement...</div></div>
+                </div>
+
+                <!-- HORAIRES TAB -->
+                <div id="horairesTab" class="tab-content">
+                    <div class="section-header">
+                        <h2>Gestion des Horaires</h2>
+                        <button class="btn btn-primary" onclick="saveHoraires()">💾 Enregistrer les horaires</button>
+                    </div>
+                    <p style="color:var(--text-light);font-size:.9rem;margin-bottom:1rem;">Tapez <strong>Fermé</strong> dans les deux champs pour marquer un jour comme fermé.</p>
+                    <div id="horairesList"><div class="loading">Chargement...</div></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ══ MODAL SERVICE ═════════════════════════════════════════════════════ -->
+    <div id="serviceModal" class="modal">
+        <div class="modal-content modal-large">
+            <span class="modal-close" onclick="closeAllModals()">&times;</span>
+            <h2 id="serviceModalTitle">Créer un Service</h2>
+            <form id="serviceForm">
+                <input type="hidden" id="serviceId">
+                <div class="form-group"><label>Nom *</label><input type="text" id="serviceName" required></div>
+                <div class="form-group"><label>Description *</label><textarea id="serviceDescription" rows="3" required></textarea></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Prix (€) *</label><input type="number" id="servicePrice" step="0.01" min="0" required></div>
+                    <div class="form-group"><label>Durée (min)</label><input type="number" id="serviceDuration" value="120" min="0"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Thème</label><select id="serviceTheme"></select></div>
+                    <div class="form-group"><label>Régime</label><select id="serviceRegime"></select></div>
+                </div>
+                <div class="form-group"><label>Plats associés</label><div id="platsCheckboxes" class="checkbox-group"></div></div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeAllModals()">Annuler</button>
+                    <button type="submit" class="btn btn-primary" id="serviceSubmitBtn">Créer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ══ MODAL PLAT ════════════════════════════════════════════════════════ -->
+    <div id="platModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeAllModals()">&times;</span>
+            <h2>Nouveau Plat</h2>
+            <form id="platForm">
+                <div class="form-group"><label>Nom *</label><input type="text" id="platTitle" required></div>
+                <div class="form-group"><label>URL photo</label><input type="url" id="platPhoto" placeholder="https://..."></div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeAllModals()">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Créer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ══ MODAL UTILISATEUR ════════════════════════════════════════════════ -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeAllModals()">&times;</span>
+            <h2 id="userModalTitle">Créer un Utilisateur</h2>
+            <form id="userForm">
+                <input type="hidden" id="userId">
+                <div class="form-row">
+                    <div class="form-group"><label>Prénom *</label><input type="text" id="userFirstname" required></div>
+                    <div class="form-group"><label>Nom *</label><input type="text" id="userLastname" required></div>
+                </div>
+                <div class="form-group"><label>Email *</label><input type="email" id="userEmail" required></div>
+                <div class="form-group" id="userPasswordGroup">
+                    <label id="userPasswordLabel">Mot de passe *</label>
+                    <input type="password" id="userPassword" placeholder="Minimum 8 caractères">
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Téléphone</label><input type="tel" id="userPhone"></div>
+                    <div class="form-group">
+                        <label>Rôle *</label>
+                        <select id="userRole" required>
+                            <option value="UTILISATEUR">Utilisateur</option>
+                            <option value="EMPLOYEE">Employé</option>
+                            <option value="ADMIN">Administrateur</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Adresse</label><input type="text" id="userAddress"></div>
+                    <div class="form-group"><label>Ville</label><input type="text" id="userCity"></div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeAllModals()">Annuler</button>
+                    <button type="submit" class="btn btn-primary" id="userSubmitBtn">Créer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ══ MODAL STATUT COMMANDE ════════════════════════════════════════════ -->
+    <div id="aptStatusModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeAllModals()">&times;</span>
+            <h2>Modifier le Statut</h2>
+            <div id="aptStatusInfo" class="modal-info"></div>
+            <form id="aptStatusForm">
+                <input type="hidden" id="aptStatusId">
+                <div class="form-group">
+                    <label>Nouveau statut</label>
+                    <select id="aptNewStatus" required>
+                        <option value="PENDING">En attente</option>
+                        <option value="ACCEPTE">Accepté</option>
+                        <option value="EN_PREPARATION">En préparation</option>
+                        <option value="TERMINE">Terminé</option>
+                        <option value="ANNULE">Annulé</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeAllModals()">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section"><h3>Vite & Gourmand</h3><p>Restauration événementielle d'exception depuis 2004</p></div>
+                <div class="footer-section"><h3>Nos Horaires</h3><div id="footerHoraires"><p class="loading-small">Chargement...</p></div></div>
+                <div class="footer-section"><h3>Contact</h3><p>Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a6c5c9c8d2c7c5d2e6d0cfd2c3c1c9d3d4cbc7c8c288c0d4">[email&#160;protected]</a></p><p>Tél: 01 23 45 67 89</p></div>
+            </div>
+            <div class="footer-bottom"><p>&copy; 2026 Vite & Gourmand. Tous droits réservés.</p></div>
+        </div>
+    </footer>
+
+    <script>window.ROOT_PATH = "../../";</script>
+    <script src="../../shared/api.js"></script>
+    <script src="../../shared/auth.js"></script>
+    <script src="../../shared/footer-horaires.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

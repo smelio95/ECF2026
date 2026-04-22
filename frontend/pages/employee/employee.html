@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Employé - Vite &amp; Gourmand</title>
+    <link rel="stylesheet" href="../../shared/styles.css">
+    <link rel="stylesheet" href="employee.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>Vite & Gourmand</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="../../index.html">Accueil</a></li>
+                <li><a href="../services/services.html">Services</a></li>
+                <li><a href="employee.html" class="active">Espace Employé</a></li>
+                <li><a href="../profile/profile.html">Profil</a></li>
+                <li><a href="#" id="logoutLink">Déconnexion</a></li>
+            </ul>
+            <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</div>
+        </div>
+    </nav>
+
+    <main>
+        <section class="employee-section">
+            <div class="container">
+                <div class="employee-header">
+                    <h1>Espace Employé</h1>
+                    <p class="employee-subtitle" id="welcomeMessage">Bienvenue</p>
+                </div>
+
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">📋</div>
+                        <div class="stat-content">
+                            <h3 id="myAppointmentsCount">-</h3>
+                            <p>Commandes assignées</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⏳</div>
+                        <div class="stat-content">
+                            <h3 id="pendingCount">-</h3>
+                            <p>En attente</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">✅</div>
+                        <div class="stat-content">
+                            <h3 id="completedCount">-</h3>
+                            <p>Terminées</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="employee-tabs">
+                    <button class="tab-button active" onclick="switchTab('appointments', event)">Mes Commandes</button>
+                    <button class="tab-button" onclick="switchTab('catalog', event)">Gérer le Catalogue</button>
+                </div>
+
+                <div id="appointmentsTab" class="tab-content active">
+                    <div class="section-header">
+                        <h2>Mes Commandes Assignées</h2>
+                        <div class="filter-buttons">
+                            <button class="btn btn-sm btn-secondary active" onclick="filterMyAppointments('all', event)">Toutes</button>
+                            <button class="btn btn-sm btn-secondary" onclick="filterMyAppointments('PENDING', event)">En attente</button>
+                            <button class="btn btn-sm btn-secondary" onclick="filterMyAppointments('ACCEPTE', event)">Acceptées</button>
+                            <button class="btn btn-sm btn-secondary" onclick="filterMyAppointments('EN_PREPARATION', event)">En préparation</button>
+                            <button class="btn btn-sm btn-secondary" onclick="filterMyAppointments('TERMINE', event)">Terminées</button>
+                        </div>
+                    </div>
+                    <div id="myAppointmentsList" class="appointments-grid">
+                        <div class="loading">Chargement de vos commandes...</div>
+                    </div>
+                </div>
+
+                <div id="catalogTab" class="tab-content">
+                    <div class="catalog-grid">
+                        <div class="catalog-section">
+                            <div class="section-header">
+                                <h2>Gestion des Plats</h2>
+                                <button class="btn btn-primary" onclick="showCreatePlatModal()">+ Nouveau plat</button>
+                            </div>
+                            <div id="employeePlatsList" class="admin-list">
+                                <div class="loading">Chargement...</div>
+                            </div>
+                        </div>
+                        <div class="catalog-section">
+                            <div class="section-header">
+                                <h2>Gestion des Services</h2>
+                                <button class="btn btn-primary" onclick="showCreateServiceModal()">+ Nouveau service</button>
+                            </div>
+                            <div id="employeeServicesList" class="admin-list">
+                                <div class="loading">Chargement...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal modification statut -->
+    <div id="statusModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeAllModals()">&times;</span>
+            <h2>Modifier le Statut de la Commande</h2>
+            <div id="appointmentDetails"></div>
+            <form id="updateStatusForm">
+                <div class="form-group">
+                    <label for="newStatus">Nouveau statut</label>
+                    <select id="newStatus" required>
+                        <option value="PENDING">En attente</option>
+                        <option value="ACCEPTE">Accepté</option>
+                        <option value="EN_PREPARATION">En préparation</option>
+                        <option value="TERMINE">Terminé</option>
+                        <option value="ANNULE">Annulé</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeAllModals()">Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal création plat -->
+    <div id="createPlatModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeAllModals()">&times;</span>
+            <h2>Créer un Nouveau Plat</h2>
+            <form id="createPlatForm">
+                <div class="form-group">
+                    <label for="platTitle">Nom du plat *</label>
+                    <input type="text" id="platTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="platPhoto">URL de la photo</label>
+                    <input type="url" id="platPhoto" placeholder="https://...">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Créer le plat</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeAllModals()">Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal création service -->
+    <div id="createServiceModal" class="modal">
+        <div class="modal-content modal-large">
+            <span class="modal-close" onclick="closeAllModals()">&times;</span>
+            <h2>Créer un Nouveau Service</h2>
+            <form id="createServiceForm">
+                <div class="form-group">
+                    <label for="serviceName">Nom du service *</label>
+                    <input type="text" id="serviceName" required>
+                </div>
+                <div class="form-group">
+                    <label for="serviceDescription">Description *</label>
+                    <textarea id="serviceDescription" rows="3" required></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="servicePrice">Prix (€) *</label>
+                        <input type="number" id="servicePrice" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceDuration">Durée (minutes)</label>
+                        <input type="number" id="serviceDuration" value="120">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="serviceTheme">Thème</label>
+                        <select id="serviceTheme"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceRegime">Régime</label>
+                        <select id="serviceRegime"></select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Plats associés</label>
+                    <div id="platsCheckboxes" class="checkbox-group"></div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Créer le service</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeAllModals()">Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Vite & Gourmand</h3>
+                    <p>Restauration événementielle d'exception depuis 2004</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Nos Horaires</h3>
+                    <div id="footerHoraires"><p class="loading-small">Chargement...</p></div>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact</h3>
+                    <p>Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="086b67667c696b7c487e617c6d6f677d7a6569666c266e7a">[email&#160;protected]</a></p>
+                    <p>Tél: 01 23 45 67 89</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Vite & Gourmand. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <div id="statusModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeAllModals()">&times;</span>
+            <h2>Modifier le Statut de la Commande</h2>
+            <div id="appointmentDetails"></div>
+            <form id="updateStatusForm">
+                <div class="form-group">
+                    <label for="newStatus">Nouveau statut</label>
+                    <select id="newStatus" required>
+                        <option value="PENDING">En attente</option>
+                        <option value="ACCEPTE">Accepté</option>
+                        <option value="EN_PREPARATION">En préparation</option>
+                        <option value="TERMINE">Terminé</option>
+                        <option value="ANNULE">Annulé</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeAllModals()">Annuler</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>window.ROOT_PATH = "../../";</script>
+    <script src="../../shared/api.js"></script>
+    <script src="../../shared/auth.js"></script>
+    <script src="../../shared/footer-horaires.js"></script>
+    <script src="employee.js"></script>
+</body>
+</html>
