@@ -38,14 +38,16 @@ export const getUserAppointments = async (userId) => {
 };
 
 // Supprimer une commande (uniquement la sienne)
-export const deleteAppointment = async (id, userId) => {
+export const deleteAppointment = async (id, user) => {
   const appointment = await prisma.appointment.findUnique({ where: { id } });
-  
+
   if (!appointment) {
     throw new Error("Commande non trouvée");
   }
-  
-  if (appointment.user_id !== parseInt(userId)) {
+
+  const roleLabel = user.role?.label || user.role;
+
+  if (roleLabel !== 'ADMIN' && appointment.user_id !== parseInt(user.id)) {
     throw new Error("Vous ne pouvez pas supprimer cette commande");
   }
 

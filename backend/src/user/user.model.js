@@ -88,18 +88,29 @@ export const getUserById = async (userId) => {
 
 // Mettre à jour les informations d'un utilisateur
 export const updateUser = async (userId, userData) => {
-  const { firstname, lastname, phone, address, city, country } = userData;
+  const { firstname, lastname, phone, address, city, country, role_id, password } = userData;
+
+  const dataToUpdate = {
+    firstname,
+    lastname,
+    phone,
+    address,
+    city,
+    country,
+    ...(role_id && {
+      role: {
+        connect: { id: parseInt(role_id) }
+      }
+    })
+  };
+
+  if (password) {
+    dataToUpdate.password = await bcrypt.hash(password, 10);
+  }
 
   return prisma.user.update({
-    where: { id: userId },
-    data: {
-      firstname,
-      lastname,
-      phone,
-      address,
-      city,
-      country
-    },
+    where: { id: parseInt(userId) },
+    data: dataToUpdate,
     select: {
       id: true,
       email: true,
@@ -123,5 +134,45 @@ export const updateUser = async (userId, userData) => {
 export const deleteUser = async (userId) => {
   return prisma.user.delete({
     where: { id: userId }
+  });
+};
+
+// Récupérer tous les utilisateurs
+export const getAllUsersFromDB = async () => {
+  return prisma.user.findMany({
+    select: {
+      id: true,
+      firstname: true,
+      lastname: true,
+      email: true,
+      phone: true,
+      address: true,
+      city: true,
+      role: {
+        select: { label: true }
+      },
+      created_at: true
+    },
+    orderBy: { created_at: 'desc' }
+  });
+};
+
+// Récupérer les employés et admins
+export const getEmployeesFromDB = async () => {
+  return prisma.user.findMany({
+    where: {
+      role: {
+        label: { in: ['EMPLOYEE'] }
+      }
+    },
+    select: {
+      id: true,
+      firstname: true,
+      lastname: true,
+      role: {
+        select: { label: true }
+      }
+    },
+    orderBy: { firstname: 'asc' }
   });
 };

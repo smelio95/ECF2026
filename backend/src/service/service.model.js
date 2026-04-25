@@ -201,16 +201,34 @@ export const updateService = async (id, data) => {
 
 // Supprimer un service
 export const deleteService = async (id) => {
-  // Vérifier s'il y a des rendez-vous associés
   const appointmentsCount = await prisma.appointment.count({
     where: { service_id: id }
   });
 
   if (appointmentsCount > 0) {
     throw new Error(
-      `Impossible de supprimer ce service. ${appointmentsCount} rendez-vous y sont associés.`
+      `Impossible de supprimer ce service : ${appointmentsCount} commande(s) y sont associée(s).`
     );
   }
+
+  const reviewsCount = await prisma.review.count({
+    where: { service_id: id }
+  });
+
+  if (reviewsCount > 0) {
+    throw new Error(
+      `Impossible de supprimer ce service : ${reviewsCount} avis y sont associé(s).`
+    );
+  }
+
+  await prisma.service.update({
+    where: { id },
+    data: {
+      plats: {
+        set: []
+      }
+    }
+  });
 
   return prisma.service.delete({
     where: { id }

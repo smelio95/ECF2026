@@ -191,7 +191,8 @@ export const remove = async (req, res) => {
     }
 
     // Erreur si rendez-vous associés
-    if (error.message.includes('rendez-vous')) {
+    if (
+      error.message.includes('commande') || error.message.includes('avis')) {
       return res.status(400).json({ 
         message: error.message 
       });

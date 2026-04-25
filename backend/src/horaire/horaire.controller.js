@@ -48,3 +48,38 @@ export const getById = async (req, res) => {
     });
   }
 };
+
+export const update = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const { opening_time, closing_time } = req.body;
+
+    if (isNaN(id)) {
+      return res.status(400).json({ message: "ID invalide" });
+    }
+
+    const horaire = await prisma.horaire.update({
+      where: { id },
+      data: {
+        opening_time,
+        closing_time
+      }
+    });
+
+    res.json({
+      message: "Horaire mis à jour avec succès",
+      horaire
+    });
+  } catch (error) {
+    console.error('Erreur updateHoraire:', error);
+
+    if (error.code === 'P2025') {
+      return res.status(404).json({ message: "Horaire non trouvé" });
+    }
+
+    res.status(500).json({
+      message: "Erreur lors de la mise à jour de l'horaire",
+      error: error.message
+    });
+  }
+};

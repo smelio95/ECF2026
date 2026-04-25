@@ -1,4 +1,4 @@
-const ROOT = window.ROOT_PATH || '../../';
+//const ROOT = window.ROOT_PATH || '../../';
 let currentUser = null;
 
 async function loadProfile() {

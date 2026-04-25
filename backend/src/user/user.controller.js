@@ -1,13 +1,21 @@
-import { createUser, loginUser, getUserById, updateUser, deleteUser as deleteUserFromDB } from './user.model.js';
+import {
+  createUser,
+  loginUser,
+  getUserById,
+  updateUser,
+  deleteUser as deleteUserFromDB,
+  getAllUsersFromDB,
+  getEmployeesFromDB
+} from './user.model.js';
 
 // Inscription d'un nouvel utilisateur
 export const registerUser = async (req, res) => {
   try {
     const user = await createUser(req.body);
 
-    res.status(201).json({
+    res.status(201).json({ 
       message: "Utilisateur créé avec succès",
-      user: {
+      user: { 
         id: user.id,
         email: user.email,
         firstname: user.firstname,
@@ -19,13 +27,13 @@ export const registerUser = async (req, res) => {
     console.error(error);
     
     // Gestion des erreurs spécifiques
-    if (error.code === 'P2002') {
-      return res.status(400).json({
+    if (error.code === 'P2002')  { 
+      return res.status(400).json({ 
         message: "Cet email est déjà utilisé"
       });
     }
     
-    res.status(500).json({
+    res.status(500).json({ 
       message: "Erreur lors de la création de l'utilisateur",
       error: error.message
     });
@@ -35,18 +43,18 @@ export const registerUser = async (req, res) => {
 // Connexion d'un utilisateur
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = req.body; 
 
     // Validation basique
-    if (!email || !password) {
+    if (!email || !password) { 
       return res.status(400).json({ 
         message: "Email et mot de passe requis" 
       });
     }
 
-    const result = await loginUser(email, password);
+    const result = await loginUser(email, password); 
 
-    res.json({
+    res.json({ 
       message: "Connexion réussie",
       token: result.token,
       user: {
@@ -69,7 +77,7 @@ export const login = async (req, res) => {
 // Récupérer le profil de l'utilisateur connecté
 export const getProfile = async (req, res) => {
   try {
-    const user = await getUserById(req.user.id); // ✅ CORRIGÉ
+    const user = await getUserById(req.user.id);
 
     if (!user) {
       return res.status(404).json({ 
@@ -89,8 +97,7 @@ export const getProfile = async (req, res) => {
 // Mettre à jour le profil de l'utilisateur connecté
 export const updateProfile = async (req, res) => {
   try {
-    const updatedUser = await updateUser(req.user.id, req.body); // ✅ CORRIGÉ
-
+    const updatedUser = await updateUser(req.user.id, req.body);
     res.json({
       message: "Profil mis à jour avec succès",
       user: updatedUser
@@ -106,7 +113,7 @@ export const updateProfile = async (req, res) => {
 // Supprimer le compte de l'utilisateur connecté
 export const deleteProfile = async (req, res) => {
   try {
-    await deleteUserFromDB(req.user.id); // ✅ CORRIGÉ
+    await deleteUserFromDB(req.user.id); 
     res.json({ message: "Compte supprimé avec succès" });
   } catch (error) {
     console.error(error);
@@ -117,52 +124,71 @@ export const deleteProfile = async (req, res) => {
   }
 };
 
+// Récupérer la liste de tous les utilisateurs (admin uniquement)
 export const getAllUsers = async (req, res) => {
-    try {
-        const users = await prisma.user.findMany({
-            select: {
-                id: true,
-                firstname: true,
-                lastname: true,
-                email: true,
-                phone: true,
-                address: true,
-                city: true,
-                role: {
-                    select: { label: true }
-                },
-                created_at: true
-            },
-            orderBy: { created_at: 'desc' }
-        });
-        res.json(users);
-    } catch (error) {
-        console.error('Erreur getAllUsers:', error);
-        res.status(500).json({ message: 'Erreur serveur' });
-    }
+  try {
+    const users = await getAllUsersFromDB();
+    res.json(users);
+  } catch (error) {
+    console.error('Erreur getAllUsers:', error);
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
 };
 
+// Récupérer la liste des employés disponibles (admin et employee)
 export const getEmployees = async (req, res) => {
     try {
-        const employees = await prisma.user.findMany({
-            where: {
-                role: {
-                    label: { in: ['EMPLOYEE', 'ADMIN'] }
-                }
-            },
-            select: {
-                id: true,
-                firstname: true,
-                lastname: true,
-                role: {
-                    select: { label: true }
-                }
-            },
-            orderBy: { firstname: 'asc' }
-        });
+        const employees = await getEmployeesFromDB();
         res.json(employees);
     } catch (error) {
         console.error('Erreur getEmployees:', error);
         res.status(500).json({ message: 'Erreur serveur' });
     }
+};
+
+// Mettre à jour un utilisateur par l'admin
+export const updateUserByAdmin = async (req, res) => {
+  try {
+    const userId = parseInt(req.params.id);
+
+    if (isNaN(userId)) {
+      return res.status(400).json({ message: "ID utilisateur invalide" });
+    }
+
+    const updatedUser = await updateUser(userId, req.body);
+
+    res.json({
+      message: "Utilisateur mis à jour avec succès",
+      user: updatedUser
+    });
+  } catch (error) {
+    console.error('Erreur updateUserByAdmin:', error);
+    res.status(500).json({
+      message: "Erreur lors de la mise à jour de l'utilisateur",
+      error: error.message
+    });
+  }
+};
+
+// Supprimer un utilisateur par l'admin
+export const deleteUserByAdmin = async (req, res) => {
+  try {
+    const userId = parseInt(req.params.id);
+
+    if (isNaN(userId)) {
+      return res.status(400).json({ message: "ID utilisateur invalide" });
+    }
+
+    await deleteUserFromDB(userId);
+
+    res.json({
+      message: "Utilisateur supprimé avec succès"
+    });
+  } catch (error) {
+    console.error('Erreur deleteUserByAdmin:', error);
+    res.status(500).json({
+      message: "Erreur lors de la suppression de l'utilisateur",
+      error: error.message
+    });
+  }
 };

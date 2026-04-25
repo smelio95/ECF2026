@@ -51,8 +51,8 @@ export const remove = async (req, res) => {
   try {
     await deleteAppointment(
       parseInt(req.params.id),
-      req.user.id  
-    );
+      req.user
+);
     res.json({ message: "Commande annulée avec succès" });
   } catch (error) {
     console.error('Erreur remove appointment:', error);

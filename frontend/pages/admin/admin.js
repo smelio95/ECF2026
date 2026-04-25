@@ -99,7 +99,7 @@ function closeAllModals() {
 // SERVICES
 // ══════════════════════════════════════════
 async function loadServices() {
-    try {
+    try { 
         const response = await api.get('/services');
         const services = response.services || [];
         const listDiv  = document.getElementById('servicesList');
@@ -164,8 +164,8 @@ async function showServiceModal(id) {
     await loadFormData();
     currentEditId = id || null;
 
-    const modal = document.getElementById('createServiceModal');
-    const title = modal.querySelector('h2');
+    const modal = document.getElementById('serviceModal'); // 
+    const title = document.getElementById('serviceModalTitle'); // 
 
     if (id) {
         title.textContent = 'Modifier le Service';
@@ -187,11 +187,25 @@ async function showServiceModal(id) {
         }
     } else {
         title.textContent = 'Créer un Nouveau Service';
-        document.getElementById('createServiceForm').reset();
+        document.getElementById('serviceForm').reset(); //
         document.getElementById('serviceDuration').value = 120;
     }
 
     modal.style.display = 'block';
+}
+
+async function deleteService(id) {
+    if (!confirm('Supprimer ce service ?')) return;
+
+    try {
+        await api.delete(`/services/${id}`);
+        alert('Service supprimé');
+
+        loadServices();
+        loadDashboardStats();
+    } catch (error) {
+        alert(error.message || 'Impossible de supprimer ce service');
+    }
 }
 
 // ══════════════════════════════════════════
@@ -216,6 +230,7 @@ async function loadPlats() {
                 ${plat.photo ? `<img src="${plat.photo}" alt="${plat.title}" class="item-image">` : ''}
                 <p class="item-date">Créé le ${new Date(plat.created_at).toLocaleDateString('fr-FR')}</p>
                 <div class="item-actions">
+                    <button class="btn btn-sm btn-primary" onclick="showPlatModal(${plat.id})">Modifier</button>
                     <button class="btn btn-sm btn-danger" onclick="deletePlat(${plat.id})">Supprimer</button>
                 </div>
             </div>
@@ -225,8 +240,29 @@ async function loadPlats() {
     }
 }
 
-function showCreatePlatModal() {
-    document.getElementById('createPlatModal').style.display = 'block';
+function showPlatModal(id = null) {
+    currentEditId = id ? Number(id) : null;
+
+    const modal = document.getElementById('platModal');
+    const form = document.getElementById('platForm');
+    const title = modal.querySelector('h2');
+
+    form.reset();
+
+    if (id) {
+        title.textContent = 'Modifier le Plat';
+
+        const plat = allPlats.find(p => p.id === id);
+
+        if (plat) {
+            document.getElementById('platTitle').value = plat.title || '';
+            document.getElementById('platPhoto').value = plat.photo || '';
+        }
+    } else {
+        title.textContent = 'Nouveau Plat';
+    }
+
+    modal.style.display = 'block';
 }
 
 async function deletePlat(id) {
@@ -287,11 +323,22 @@ function filterAppointments(status) {
     }
 }
 
+function filterApt(status, event) {
+    document.querySelectorAll('#appointmentsTab .filter-buttons .btn')
+        .forEach(btn => btn.classList.remove('active'));
+
+    if (event?.target) {
+        event.target.classList.add('active');
+    }
+
+    filterAppointments(status);
+}
+
 function showChangeStatusModal(id, currentStatus) {
     currentEditId = id;
-    document.getElementById('currentAppointmentStatus').textContent = currentStatus;
-    document.getElementById('newStatus').value = currentStatus;
-    document.getElementById('changeStatusModal').style.display = 'block';
+    document.getElementById('aptStatusInfo').textContent = `Statut actuel: ${currentStatus}`;
+    document.getElementById('aptNewStatus').value = currentStatus;
+    document.getElementById('aptStatusModal').style.display = 'block';
 }
 
 async function deleteAppointment(id) {
@@ -469,7 +516,12 @@ async function loadHoraires() {
         listDiv.innerHTML = `
             <table class="horaires-table">
                 <thead>
-                    <tr><th>Jour</th><th>Ouverture</th><th>Fermeture</th><th>Statut</th></tr>
+                    <tr>
+                    <th>Jour</th>
+                    <th>Ouverture</th>
+                    <th>Fermeture</th>
+                    <th>Statut</th>
+                    </tr>
                 </thead>
                 <tbody>
                     ${horaires.map(h => `
@@ -528,7 +580,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     loadServices();
 
     // Attacher les formulaires
-    document.getElementById('createServiceForm').addEventListener('submit', async (e) => {
+    document.getElementById('serviceForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         const selectedPlats = Array.from(document.querySelectorAll('#platsCheckboxes input:checked'))
             .map(cb => parseInt(cb.value));
@@ -557,31 +609,44 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    document.getElementById('createPlatForm').addEventListener('submit', async (e) => {
+    const platForm = document.getElementById('platForm');
+
+if (platForm) {
+    platForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+
         const platData = {
             title: document.getElementById('platTitle').value,
             photo: document.getElementById('platPhoto').value || null
         };
+
         try {
-            await api.post('/plats', platData);
-            alert('Plat créé avec succès');
+            if (currentEditId !== null) {
+                await api.put(`/plats/${currentEditId}`, platData);
+                alert('Plat modifié avec succès');
+            } else {
+                await api.post('/plats', platData);
+                alert('Plat créé avec succès');
+            }
+
             closeAllModals();
-            document.getElementById('createPlatForm').reset();
+            platForm.reset();
             loadPlats();
             loadDashboardStats();
+
         } catch (error) {
             alert('Erreur: ' + error.message);
         }
     });
+}
 
-    const changeStatusForm = document.getElementById('changeStatusForm');
+    const changeStatusForm = document.getElementById('aptStatusForm');
     if (changeStatusForm) {
         changeStatusForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             try {
                 await api.put(`/appointments/${currentEditId}`, {
-                    status: document.getElementById('newStatus').value
+                    status: document.getElementById('aptNewStatus').value
                 });
                 alert('Statut mis à jour');
                 closeAllModals();
@@ -597,6 +662,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         userForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const pwd = document.getElementById('userPassword').value;
+            const roleMap = { 'ADMIN': 2, 'EMPLOYEE': 3, 'UTILISATEUR': 4 };
             const userData = {
                 firstname: document.getElementById('userFirstname').value,
                 lastname:  document.getElementById('userLastname').value,
@@ -604,7 +670,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 phone:     document.getElementById('userPhone').value || null,
                 address:   document.getElementById('userAddress').value || null,
                 city:      document.getElementById('userCity').value || null,
-                role:      document.getElementById('userRole').value
+                role_id:   roleMap[document.getElementById('userRole').value] || 4
             };
             if (pwd) userData.password = pwd;
             try {

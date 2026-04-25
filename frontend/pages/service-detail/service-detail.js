@@ -1,4 +1,3 @@
-const ROOT = window.ROOT_PATH || '../../';
 let currentService = null;
 let currentRating  = 0;
 
@@ -176,8 +175,7 @@ async function openReservationModal() {
     document.getElementById('appointmentDate').min = tomorrow.toISOString().slice(0, 16);
 
     try {
-        const users     = await api.get('/users');
-        const employees = users.filter(u => u.role?.label === 'EMPLOYEE' || u.role?.label === 'ADMIN');
+        const employees = await api.get('/users/employees'); 
         document.getElementById('employeeSelect').innerHTML = employees.map(emp =>
             `<option value="${emp.id}">👨‍🍳 ${emp.firstname} ${emp.lastname}</option>`
         ).join('');

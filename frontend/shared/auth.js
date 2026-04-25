@@ -1,7 +1,7 @@
 // Gestion de l'authentification
 // Les pages définissent window.ROOT_PATH = '../../' avant d'inclure ce fichier
 
-const ROOT = window.ROOT_PATH || './';
+const ROOT = window.ROOT_PATH || './'; //
 
 function isAuthenticated() {
     const token = localStorage.getItem('token');
@@ -33,6 +33,7 @@ function updateNavigation() {
 
     const authenticated = isAuthenticated();
     const user = getCurrentUser();
+    const role = (user?.role?.label || user?.role || '').toString().toUpperCase();
 
     if (authenticated && user) {
         loginLink.style.display   = 'none';
@@ -44,12 +45,13 @@ function updateNavigation() {
         const existingSpaceLink = document.querySelector('.space-link');
         if (existingSpaceLink) existingSpaceLink.remove();
 
-        if (user.role.label === 'ADMIN') {
+        if (role === 'ADMIN') {
             const adminLink = document.createElement('li');
             adminLink.className = 'space-link';
             adminLink.innerHTML = `<a href="${ROOT}pages/admin/admin.html">Espace Admin</a>`;
             navMenu.insertBefore(adminLink, profileLink.parentElement);
-        } else if (user.role.label === 'EMPLOYEE') {
+
+        } else if (role === 'EMPLOYEE') {
             const employeeLink = document.createElement('li');
             employeeLink.className = 'space-link';
             employeeLink.innerHTML = `<a href="${ROOT}pages/employee/employee.html">Espace Employé</a>`;

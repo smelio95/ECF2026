@@ -1,29 +1,13 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Espace Employé - Vite &amp; Gourmand</title>
+    <title>Employé - Vite &amp; Gourmand</title>
     <link rel="stylesheet" href="../../shared/styles.css">
     <link rel="stylesheet" href="employee.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-brand">
-                <h1>Vite & Gourmand</h1>
-            </div>
-            <ul class="nav-menu">
-                <li><a href="../../index.html">Accueil</a></li>
-                <li><a href="../services/services.html">Services</a></li>
-                <li><a href="employee.html" class="active">Espace Employé</a></li>
-                <li><a href="../profile/profile.html">Profil</a></li>
-                <li><a href="#" id="logoutLink">Déconnexion</a></li>
-            </ul>
-            <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</div>
-        </div>
-    </nav>
 
+    <div id="navbar"></div>
     <main>
         <section class="employee-section">
             <div class="container">
@@ -195,58 +179,13 @@
             </form>
         </div>
     </div>
-
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Vite & Gourmand</h3>
-                    <p>Restauration événementielle d'exception depuis 2004</p>
-                </div>
-                <div class="footer-section">
-                    <h3>Nos Horaires</h3>
-                    <div id="footerHoraires"><p class="loading-small">Chargement...</p></div>
-                </div>
-                <div class="footer-section">
-                    <h3>Contact</h3>
-                    <p>Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="086b67667c696b7c487e617c6d6f677d7a6569666c266e7a">[email&#160;protected]</a></p>
-                    <p>Tél: 01 23 45 67 89</p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2026 Vite & Gourmand. Tous droits réservés.</p>
-            </div>
-        </div>
-    </footer>
-
-    <div id="statusModal" class="modal">
-        <div class="modal-content">
-            <span class="modal-close" onclick="closeAllModals()">&times;</span>
-            <h2>Modifier le Statut de la Commande</h2>
-            <div id="appointmentDetails"></div>
-            <form id="updateStatusForm">
-                <div class="form-group">
-                    <label for="newStatus">Nouveau statut</label>
-                    <select id="newStatus" required>
-                        <option value="PENDING">En attente</option>
-                        <option value="ACCEPTE">Accepté</option>
-                        <option value="EN_PREPARATION">En préparation</option>
-                        <option value="TERMINE">Terminé</option>
-                        <option value="ANNULE">Annulé</option>
-                    </select>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Mettre à jour</button>
-                    <button type="button" class="btn btn-secondary" onclick="closeAllModals()">Annuler</button>
-                </div>
-            </form>
-        </div>
-    </div>
+    <div id="footer"></div>
 
     <script>window.ROOT_PATH = "../../";</script>
     <script src="../../shared/api.js"></script>
     <script src="../../shared/auth.js"></script>
     <script src="../../shared/footer-horaires.js"></script>
+    <script src="../../shared/components.js"></script>
     <script src="employee.js"></script>
 </body>
 </html>

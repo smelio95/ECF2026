@@ -6,7 +6,9 @@ import {
     updateProfile,
     deleteProfile,
     getAllUsers,
-    getEmployees
+    getEmployees,
+    updateUserByAdmin,
+    deleteUserByAdmin
 } from './user.controller.js';
 import { authenticateToken } from "../auth/auth.middleware.js";
 import { requireRole } from "../role/role.middleware.js";
@@ -24,10 +26,17 @@ router.delete('/me', authenticateToken, deleteProfile); // Supprimer son compte
 
 // ── Routes admin : liste de tous les utilisateurs ─────────────
 // Accessible uniquement par ADMIN
-router.get('/users', authenticateToken, requireRole(['ADMIN']), getAllUsers);
+router.get('/', authenticateToken, requireRole(['ADMIN']), getAllUsers);
+
+
 
 // ── Route employés : liste des employés disponibles ───────────
 // Accessible par ADMIN et EMPLOYEE (pour la sélection du chef lors d'une réservation)
 router.get('/employees', authenticateToken, getEmployees);
+
+// ─── Routes admin : gestion des utilisateurs ─────────────────
+router.post('/', authenticateToken, requireRole(['ADMIN']), registerUser);
+router.put('/:id', authenticateToken, requireRole(['ADMIN']), updateUserByAdmin);
+router.delete('/:id', authenticateToken, requireRole(['ADMIN']), deleteUserByAdmin);
 
 export default router;

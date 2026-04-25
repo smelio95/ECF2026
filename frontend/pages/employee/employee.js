@@ -1,4 +1,4 @@
-const ROOT = window.ROOT_PATH || '../../';
+//const ROOT = window.ROOT_PATH || '../../';
 let myAppointments       = [];
 let currentAppointmentId = null;
 
@@ -8,12 +8,14 @@ function toggleMobileMenu() {
 
 async function checkEmployeeAccess() {
     const user = getCurrentUser();
-    if (!user || (user.role.label !== 'EMPLOYEE' && user.role.label !== 'ADMIN')) {
+    const role = (user?.role?.label || user?.role || '').toString().toUpperCase();
+
+    if (!user || !['EMPLOYEE', 'ADMIN'].includes(role)) {
         alert('Accès réservé aux employés');
         window.location.href = ROOT + 'index.html';
         return false;
     }
-    document.getElementById('welcomeMessage').textContent = `Bienvenue ${user.firstname} ${user.lastname}`;
+    document.getElementById('welcomeMessage').textContent = `Bienvenue ${user.firstname || ''} ${user.lastname || ''}`;
     return true;
 }
 
@@ -78,30 +80,36 @@ function updateStats() {
 
 function showStatusModal(appointmentId, currentStatus) {
     currentAppointmentId = appointmentId;
-    document.getElementById('currentStatus').textContent = currentStatus;
-    document.getElementById('newStatusSelect').value     = currentStatus;
+    document.getElementById('appointmentDetails').textContent = `Statut actuel : ${currentStatus}`;
+    document.getElementById('newStatus').value = currentStatus;
     document.getElementById('statusModal').style.display = 'block';
 }
 
-function closeModal() {
-    document.getElementById('statusModal').style.display = 'none';
+function closeAllModals() {
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.style.display = 'none';
+    });
 }
 
 document.getElementById('updateStatusForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     try {
         await api.put(`/appointments/${currentAppointmentId}`, {
-            status: document.getElementById('newStatusSelect').value
+            status: document.getElementById('newStatus').value
         });
         alert('Statut mis à jour avec succès');
-        closeModal();
+        closeAllModals();
         loadMyAppointments();
     } catch (error) {
         alert('Erreur: ' + error.message);
     }
 });
 
-window.onclick = (e) => { if (e.target.classList.contains('modal')) closeModal(); };
+window.onclick = (e) => { 
+    if (e.target.classList.contains('modal')) 
+        closeAllModals(); 
+    };
+
 
 document.addEventListener('DOMContentLoaded', async () => {
     if (!isAuthenticated()) {
@@ -112,3 +120,64 @@ document.addEventListener('DOMContentLoaded', async () => {
     updateNavigation();
     loadMyAppointments();
 });
+
+function showCreatePlatModal() {
+    document.getElementById('createPlatModal').style.display = 'block';
+}
+
+function showCreateServiceModal() {
+    document.getElementById('createServiceModal').style.display = 'block';
+}
+
+function switchTab(tabName, event) {
+    document.querySelectorAll('.tab-button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+    });
+
+    if (event?.target) {
+        event.target.classList.add('active');
+    }
+
+    document.getElementById(tabName + 'Tab').classList.add('active');
+
+    if (tabName === 'appointments') {
+        loadMyAppointments();
+    }
+
+    if (tabName === 'catalog') {
+        loadEmployeeCatalog();
+    }
+}
+
+async function loadEmployeeCatalog() {
+    try {
+        const [plats, servicesResponse] = await Promise.all([
+            api.get('/plats'),
+            api.get('/services')
+        ]);
+
+        const services = servicesResponse.services || [];
+
+        document.getElementById('employeePlatsList').innerHTML = plats.map(plat => `
+            <div class="admin-item">
+                <h3>${plat.title}</h3>
+                ${plat.photo ? `<img src="${plat.photo}" alt="${plat.title}" class="item-image">` : ''}
+            </div>
+        `).join('');
+
+        document.getElementById('employeeServicesList').innerHTML = services.map(service => `
+            <div class="admin-item">
+                <h3>${service.name}</h3>
+                <p>${service.description || ''}</p>
+                <p><strong>${service.price} €</strong></p>
+            </div>
+        `).join('');
+
+    } catch (error) {
+        console.error('Erreur chargement catalogue employé:', error);
+    }
+}

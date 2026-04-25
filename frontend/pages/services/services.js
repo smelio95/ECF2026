@@ -1,4 +1,5 @@
-const ROOT = window.ROOT_PATH || '../../'; //
+//const SERVICES_ROOT = window.ROOT_PATH || '../../';
+
 //
 async function loadThemes() {
     try {

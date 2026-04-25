@@ -9,8 +9,8 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
     const errorDiv       = document.getElementById('errorMessage'); 
     const successDiv     = document.getElementById('successMessage');
     const registerButton = document.getElementById('registerButton');
-    const ROOT           = window.ROOT_PATH || '../../'; // la variable constante ROOT est définie pour être utilisée dans les redirections et les appels API, elle stocke apres le signe egal d'affectation la valeur de window.ROOT_PATH si elle existe faisant référence a la racine du projet, sinon elle prend la valeur '../../' qui correspond a un chemin relatif pour remonter de deux niveaux dans l'arborescence des dossiers, ce qui est utile pour accéder aux ressources et aux pages depuis différents emplacements dans le projet.
-
+    const ROOT           = window.ROOT_PATH || '../../'; 
+    
     errorDiv.style.display   = 'none';
     successDiv.style.display = 'none';
 

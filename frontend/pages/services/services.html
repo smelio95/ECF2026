@@ -1,27 +1,13 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nos Services - Vite &amp; Gourmand</title>
     <link rel="stylesheet" href="../../shared/styles.css">
     <link rel="stylesheet" href="services.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-brand"><h1>Vite &amp; Gourmand</h1></div>
-            <ul class="nav-menu">
-                <li><a href="../../index.html">Accueil</a></li>
-                <li><a href="services.html" class="active">Nos Services</a></li>
-                <li><a href="../login/login.html" id="loginLink">Connexion</a></li>
-                <li><a href="../profile/profile.html" id="profileLink" style="display:none;">Mon Compte</a></li>
-                <li><a href="#" id="logoutLink" style="display:none;">Déconnexion</a></li>
-            </ul>
-            <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</div>
-        </div>
-    </nav>
 
+    <div id="navbar"></div>
     <main>
         <section class="page-header">
             <div class="container">
@@ -66,34 +52,13 @@
             </div>
         </section>
     </main>
-
-        <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Vite &amp; Gourmand</h3>
-                    <p>Restauration événementielle d'exception depuis 2004</p>
-                </div>
-                <div class="footer-section">
-                    <h3>Nos Horaires</h3>
-                    <div id="footerHoraires"><p class="loading-small">Chargement...</p></div>
-                </div>
-                <div class="footer-section">
-                    <h3>Contact</h3>
-                    <p>Email: contact@vitegourmand.fr</p>
-                    <p>Tél: 01 23 45 67 89</p>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2026 Vite &amp; Gourmand. Tous droits réservés.</p>
-            </div>
-        </div>
-    </footer>
+    <div id="footer"></div>
 
     <script>window.ROOT_PATH = "../../";</script>
     <script src="../../shared/api.js"></script>
     <script src="../../shared/auth.js"></script>
     <script src="../../shared/footer-horaires.js"></script>
+    <script src="../../shared/components.js"></script>
     <script src="services.js"></script>
 </body>
 </html>

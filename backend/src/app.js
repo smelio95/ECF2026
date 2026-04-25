@@ -28,6 +28,7 @@ app.use("/api/horaires", horaireRoutes);
 app.use("/api/allergenes", allergeneRoutes);
 app.use("/api/themes", themeRoutes);
 app.use("/api/regimes", regimeRoutes);
+app.use("/api/users", userRoutes);
 
 // Route de test
 app.get("/", (req, res) => {
