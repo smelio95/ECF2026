@@ -1,4 +1,4 @@
-name: CI/CD — Vite & Gourmand
+name: CI — Vite & Gourmand
 
 on:
   push:
@@ -29,19 +29,3 @@ jobs:
       - name: Vérification syntaxe
         working-directory: ./backend
         run: node --check src/server.js
-
-  deploy:
-    name: Déploiement Railway
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - name: Checkout du code
-        uses: actions/checkout@v4
-
-      - name: Installation Railway CLI
-        run: npm install -g @railway/cli
-
-      - name: Déploiement
-        run: railway up --service backend
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
