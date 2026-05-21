@@ -11,6 +11,7 @@ import horaireRoutes from "./horaire/horaire.routes.js";
 import allergeneRoutes from "./allergene/allergene.routes.js";
 import themeRoutes from "./theme/theme.routes.js";
 import regimeRoutes from "./regime/regime.routes.js";
+import mongoReviewRoutes from "./mongo-review/mongo-review.routes.js";
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use("/api/allergenes", allergeneRoutes);
 app.use("/api/themes", themeRoutes);
 app.use("/api/regimes", regimeRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/mongo-reviews", mongoReviewRoutes);
 
 // Route de test
 app.get("/", (req, res) => {
