@@ -1,6 +1,3 @@
-//const SERVICES_ROOT = window.ROOT_PATH || '../../';
-
-//
 async function loadThemes() {
     try {
         const response = await api.get('/themes');

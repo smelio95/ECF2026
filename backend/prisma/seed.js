@@ -32,7 +32,7 @@ async function main() {
   // ============================================================
   console.log('👥 Création des utilisateurs...');
 
-  const hashAdmin    = await bcrypt.hash('Admin123!',    10);
+  const hashAdmin    = await bcrypt.hash('Admin123!',    10); 
   const hashEmployee = await bcrypt.hash('Employee123!', 10);
   const hashUser     = await bcrypt.hash('User123!',     10);
 
@@ -381,7 +381,7 @@ async function main() {
   // ============================================================
   console.log('🕐 Création des horaires...');
 
-  await prisma.horaire.deleteMany({});
+  await prisma.horaire.deleteMany({}); 
 
   const horaires = [
     { day: 'Lundi',     opening_time: '09:00', closing_time: '18:00' },
@@ -392,7 +392,7 @@ async function main() {
     { day: 'Samedi',    opening_time: '10:00', closing_time: '20:00' },
     { day: 'Dimanche',  opening_time: 'Fermé', closing_time: 'Fermé' },
   ];
-  for (const h of horaires) await prisma.horaire.create({ data: h });
+  for (const h of horaires) await prisma.horaire.create({ data: h }); 
 
   console.log('✅ Horaires créés');
 
@@ -516,6 +516,7 @@ async function main() {
   console.log('   - 18 avis (10 approuvés, 5 en attente, 1 rejeté)');
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
 }
+
 
 main() 
   .catch((e) => {

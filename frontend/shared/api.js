@@ -1,9 +1,18 @@
 // Configuration de l'API
-const API_BASE_URL = window.location.hostname === 'localhost'
+/*const API_BASE_URL = window.location.hostname === 'localhost'
   ? 'http://localhost:3000/api'
   : window.location.hostname === '192.168.1.157'
     ? 'http://192.168.1.157:3000/api'
     : 'https://ecf2026-production.up.railway.app/api';
+*/
+
+const API_BASE_URL = 
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:3000/api'
+    : window.location.hostname === '192.168.1.157'
+      ? 'http://192.168.1.157:3000/api'
+      : 'https://ecf2026-production.up.railway.app/api';
+
 
 // Module API pour centraliser toutes les requêtes
 const api = {
@@ -138,7 +147,7 @@ const api = {
 async function getRegimes() {
     try {
         const response = await api.get('/regimes');
-        return response.regimes || [];
+        return response.regimes || []; 
     } catch (error) {
         console.error('Erreur récupération régimes:', error);
         return [];

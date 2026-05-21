@@ -389,7 +389,7 @@ async function loadUsers() {
                             <button class="btn btn-sm btn-danger"  onclick="deleteUser(${user.id}, '${user.firstname} ${user.lastname}')">Supprimer</button>
                         </div>
                     </div>
-                `).join('')}
+                `).join('')} 
             </div>
         `).join('');
 
